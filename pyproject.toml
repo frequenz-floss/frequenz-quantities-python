@@ -14,7 +14,6 @@ name = "frequenz-quantities"
 description = "Types for holding quantities with units"
 readme = "README.md"
 license = { text = "MIT" }
-# TODO(cookiecutter): Remove and add more classifiers if appropriate
 keywords = [
   "frequenz",
   "python",
@@ -34,7 +33,6 @@ classifiers = [
   "Typing :: Typed",
 ]
 requires-python = ">= 3.11, < 4"
-# TODO(cookiecutter): Remove and add more dependencies if appropriate
 dependencies = ["typing-extensions >= 4.5.0, < 5"]
 dynamic = ["version"]
 
@@ -42,7 +40,6 @@ dynamic = ["version"]
 name = "Frequenz Energy-as-a-Service GmbH"
 email = "floss@frequenz.com"
 
-# TODO(cookiecutter): Remove and add more optional dependencies if appropriate
 [project.optional-dependencies]
 dev-flake8 = [
   "flake8 == 7.0.0",
