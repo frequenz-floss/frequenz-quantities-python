@@ -2,16 +2,4 @@
 
 ## Summary
 
-<!-- Here goes a general summary of what this release is about -->
-
-## Upgrading
-
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
-
-## New Features
-
-<!-- Here goes the main new features and examples or instructions on how to use them -->
-
-## Bug Fixes
-
-<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
+This is the initial release, extracted from the [SDK v1.0.0rc601](https://github.com/frequenz-floss/frequenz-sdk-python/releases/tag/v1.0.0-rc601).

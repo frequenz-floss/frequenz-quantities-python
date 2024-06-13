@@ -17,6 +17,11 @@ converting one of them.
 Quantities store the value in a base unit, and then provide methods to get that
 quantity as a particular unit.
 
+## Documentation
+
+For more information on how to use this library and examples, please check the
+[Documentation website](https://frequenz-floss.github.io/frequenz-quantities-python/).
+
 ## Supported Platforms
 
 The following platforms are officially supported (tested):
