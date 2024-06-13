@@ -6,9 +6,16 @@
 
 ## Introduction
 
-Types for holding quantities with units
+This library provide types for holding quantities with units. The main goal is
+to avoid mistakes while working with different types of quantities, for example
+avoiding adding a length to a time.
 
-TODO(cookiecutter): Improve the README file
+It also prevents mistakes when operating between the same quantity but in
+different units, like adding a power in Joules to a power in Watts without
+converting one of them.
+
+Quantities store the value in a base unit, and then provide methods to get that
+quantity as a particular unit.
 
 ## Supported Platforms
 
