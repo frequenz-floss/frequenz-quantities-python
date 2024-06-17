@@ -139,6 +139,16 @@ class Quantity:
         """
         return self._base_value
 
+    def __round__(self, ndigits: int | None = None) -> Self:
+        """Round this quantity to the given number of digits.
+
+        Args:
+            ndigits: The number of digits to round to.
+
+        Returns:
+            The rounded quantity.
+        """
+        return self._new(round(self._base_value, ndigits))
     @property
     def base_unit(self) -> str | None:
         """Return the base unit of this quantity.

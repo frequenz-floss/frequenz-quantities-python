@@ -234,6 +234,11 @@ def test_isclose() -> None:
     assert not Fz1(1.024445).isclose(Fz1(1.0))
 
 
+@hypothesis.given(value=st.floats(allow_nan=False, allow_infinity=False))
+@pytest.mark.parametrize("ndigits", [0, 1, 2, 3])
+def test_round(value: float, ndigits: int) -> None:
+    """Test the rounding of the quantities."""
+    assert round(Quantity(value), ndigits) == Quantity(round(value, ndigits))
 def test_addition_subtraction() -> None:
     """Test the addition and subtraction of the quantities."""
     assert Quantity(1) + Quantity(1, exponent=0) == Quantity(2, exponent=0)
