@@ -157,6 +157,18 @@ class Quantity:
             This quantity.
         """
         return self
+
+    def __mod__(self, other: Self) -> Self:
+        """Return the remainder of this quantity and another.
+
+        Args:
+            other: The other quantity.
+
+        Returns:
+            The remainder of this quantity and another.
+        """
+        return self._new(self._base_value % other._base_value)
+
     @property
     def base_unit(self) -> str | None:
         """Return the base unit of this quantity.

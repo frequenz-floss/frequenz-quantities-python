@@ -239,6 +239,19 @@ def test_isclose() -> None:
 def test_round(value: float, ndigits: int) -> None:
     """Test the rounding of the quantities."""
     assert round(Quantity(value), ndigits) == Quantity(round(value, ndigits))
+
+
+@hypothesis.given(
+    dividend=st.floats(allow_infinity=False, allow_nan=False),
+    divisor=st.floats(
+        allow_nan=False, allow_infinity=False, min_value=0.0, exclude_min=True
+    ),
+)
+def test_mod(dividend: float, divisor: float) -> None:
+    """Test the modulo operation of the quantities."""
+    assert Quantity(dividend) % Quantity(divisor) == Quantity(dividend % divisor)
+
+
 def test_addition_subtraction() -> None:
     """Test the addition and subtraction of the quantities."""
     assert Quantity(1) + Quantity(1, exponent=0) == Quantity(2, exponent=0)
