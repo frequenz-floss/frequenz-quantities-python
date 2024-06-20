@@ -491,6 +491,33 @@ def test_neg() -> None:
     assert -(-pct) == pct
 
 
+def test_pos() -> None:
+    """Test the positive sign of quantities."""
+    power = Power.from_watts(1000.0)
+    assert +power == power
+    assert +(+power) == power
+
+    voltage = Voltage.from_volts(230.0)
+    assert +voltage == voltage
+    assert +(+voltage) == voltage
+
+    current = Current.from_amperes(2)
+    assert +current == current
+    assert +(+current) == current
+
+    energy = Energy.from_kilowatt_hours(6.2)
+    assert +energy == energy
+    assert +(+energy) == energy
+
+    freq = Frequency.from_hertz(50)
+    assert +freq == freq
+    assert +(+freq) == freq
+
+    pct = Percentage.from_fraction(30)
+    assert +pct == pct
+    assert +(+pct) == pct
+
+
 def test_inf() -> None:
     """Test proper formating when using inf in quantities."""
     assert f"{Power.from_watts(float('inf'))}" == "inf W"

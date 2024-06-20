@@ -149,6 +149,14 @@ class Quantity:
             The rounded quantity.
         """
         return self._new(round(self._base_value, ndigits))
+
+    def __pos__(self) -> Self:
+        """Return this quantity.
+
+        Returns:
+            This quantity.
+        """
+        return self
     @property
     def base_unit(self) -> str | None:
         """Return the base unit of this quantity.
