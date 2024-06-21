@@ -234,6 +234,24 @@ def test_isclose() -> None:
     assert not Fz1(1.024445).isclose(Fz1(1.0))
 
 
+@hypothesis.given(value=st.floats(allow_nan=False, allow_infinity=False))
+@pytest.mark.parametrize("ndigits", [0, 1, 2, 3])
+def test_round(value: float, ndigits: int) -> None:
+    """Test the rounding of the quantities."""
+    assert round(Quantity(value), ndigits) == Quantity(round(value, ndigits))
+
+
+@hypothesis.given(
+    dividend=st.floats(allow_infinity=False, allow_nan=False),
+    divisor=st.floats(
+        allow_nan=False, allow_infinity=False, min_value=0.0, exclude_min=True
+    ),
+)
+def test_mod(dividend: float, divisor: float) -> None:
+    """Test the modulo operation of the quantities."""
+    assert Quantity(dividend) % Quantity(divisor) == Quantity(dividend % divisor)
+
+
 def test_addition_subtraction() -> None:
     """Test the addition and subtraction of the quantities."""
     assert Quantity(1) + Quantity(1, exponent=0) == Quantity(2, exponent=0)
@@ -484,6 +502,33 @@ def test_neg() -> None:
     pct = Percentage.from_fraction(30)
     assert -pct == Percentage.from_fraction(-30)
     assert -(-pct) == pct
+
+
+def test_pos() -> None:
+    """Test the positive sign of quantities."""
+    power = Power.from_watts(1000.0)
+    assert +power == power
+    assert +(+power) == power
+
+    voltage = Voltage.from_volts(230.0)
+    assert +voltage == voltage
+    assert +(+voltage) == voltage
+
+    current = Current.from_amperes(2)
+    assert +current == current
+    assert +(+current) == current
+
+    energy = Energy.from_kilowatt_hours(6.2)
+    assert +energy == energy
+    assert +(+energy) == energy
+
+    freq = Frequency.from_hertz(50)
+    assert +freq == freq
+    assert +(+freq) == freq
+
+    pct = Percentage.from_fraction(30)
+    assert +pct == pct
+    assert +(+pct) == pct
 
 
 def test_inf() -> None:
