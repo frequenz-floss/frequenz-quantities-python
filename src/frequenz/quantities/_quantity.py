@@ -61,7 +61,6 @@ class Quantity:
                 symbol.
 
         Raises:
-            TypeError: If the given exponent_unit_map is not a dict.
             ValueError: If the given exponent_unit_map does not contain a base unit
                 (exponent 0).
         """
