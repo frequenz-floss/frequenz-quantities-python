@@ -83,6 +83,7 @@ from ._frequency import Frequency
 from ._percentage import Percentage
 from ._power import Power
 from ._quantity import Quantity
+from ._reactive_power import ReactivePower
 from ._temperature import Temperature
 from ._voltage import Voltage
 
@@ -93,6 +94,7 @@ __all__ = [
     "Percentage",
     "Power",
     "Quantity",
+    "ReactivePower",
     "Temperature",
     "Voltage",
 ]
