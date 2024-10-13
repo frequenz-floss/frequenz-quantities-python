@@ -77,6 +77,7 @@ Example:
 """
 
 
+from ._apparent_power import ApparentPower
 from ._current import Current
 from ._energy import Energy
 from ._frequency import Frequency
@@ -95,6 +96,7 @@ __all__ = [
     "Power",
     "Quantity",
     "ReactivePower",
+    "ApparentPower",
     "Temperature",
     "Voltage",
 ]

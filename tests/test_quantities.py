@@ -13,6 +13,7 @@ from hypothesis import strategies as st
 
 from frequenz import quantities
 from frequenz.quantities import (
+    ApparentPower,
     Current,
     Energy,
     Frequency,
@@ -117,6 +118,13 @@ def test_zero() -> None:  # pylint: disable=too-many-statements
     assert ReactivePower.zero().as_volt_amperes_reactive() == 0.0
     assert ReactivePower.zero().as_kilo_volt_amperes_reactive() == 0.0
     assert ReactivePower.zero() is ReactivePower.zero()  # It is a "singleton"
+
+    assert ApparentPower.from_volt_amperes(0.0) == ApparentPower.zero()
+    assert ApparentPower.from_kilo_volt_amperes(0.0) == ApparentPower.zero()
+    assert isinstance(ApparentPower.zero(), ApparentPower)
+    assert ApparentPower.zero().as_volt_amperes() == 0.0
+    assert ApparentPower.zero().as_kilo_volt_amperes() == 0.0
+    assert ApparentPower.zero() is ApparentPower.zero()  # It is a "singleton"
 
     assert Current.from_amperes(0.0) == Current.zero()
     assert Current.from_milliamperes(0.0) == Current.zero()
@@ -232,10 +240,13 @@ def test_string_representation() -> None:
     assert f"{Power.from_watts(0.000124445):.0}" == "0 W"
     assert f"{Energy.from_watt_hours(0.124445):.0}" == "0 Wh"
     assert f"{ReactivePower.from_volt_amperes_reactive(0.000124445):.0}" == "0 VAR"
+    assert f"{ApparentPower.from_volt_amperes(0.000124445):.0}" == "0 VA"
     assert f"{Power.from_watts(-0.0):.0}" == "-0 W"
     assert f"{Power.from_watts(0.0):.0}" == "0 W"
     assert f"{ReactivePower.from_volt_amperes_reactive(-0.0):.0}" == "-0 VAR"
     assert f"{ReactivePower.from_volt_amperes_reactive(0.0):.0}" == "0 VAR"
+    assert f"{ApparentPower.from_volt_amperes(-0.0):.0}" == "-0 VA"
+    assert f"{ApparentPower.from_volt_amperes(0.0):.0}" == "0 VA"
     assert f"{Voltage.from_volts(999.9999850988388)}" == "1 kV"
 
 
@@ -390,6 +401,26 @@ def test_reactive_power() -> None:
         ReactivePower(1.0, exponent=0)
 
 
+def test_apparent_power() -> None:
+    """Test the apparent power class."""
+    power = ApparentPower.from_milli_volt_amperes(0.0000002)
+    assert f"{power:.9}" == "0.0000002 mVA"
+    power = ApparentPower.from_kilo_volt_amperes(10000000.2)
+    assert f"{power}" == "10000 MVA"
+
+    power = ApparentPower.from_kilo_volt_amperes(1.2)
+    assert power.as_volt_amperes() == 1200.0
+    assert power.as_mega_volt_amperes() == 0.0012
+    assert power.as_kilo_volt_amperes() == 1.2
+    assert power == ApparentPower.from_milli_volt_amperes(1200000.0)
+    assert power == ApparentPower.from_mega_volt_amperes(0.0012)
+    assert power != ApparentPower.from_volt_amperes(1000.0)
+
+    with pytest.raises(TypeError):
+        # using the default constructor should raise.
+        ApparentPower(1.0, exponent=0)
+
+
 def test_current() -> None:
     """Test the current class."""
     current = Current.from_milliamperes(0.0000002)
@@ -468,6 +499,7 @@ def test_temperature() -> None:
     [
         Power.from_watts(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
@@ -528,6 +560,10 @@ def test_neg() -> None:
     assert -reactive_power == ReactivePower.from_volt_amperes_reactive(-1000.0)
     assert -(-reactive_power) == reactive_power
 
+    apparent_power = ApparentPower.from_volt_amperes(1000.0)
+    assert -apparent_power == ApparentPower.from_volt_amperes(-1000.0)
+    assert -(-apparent_power) == apparent_power
+
     voltage = Voltage.from_volts(230.0)
     assert -voltage == Voltage.from_volts(-230.0)
     assert -(-voltage) == voltage
@@ -558,6 +594,10 @@ def test_pos() -> None:
     assert +reactive_power == reactive_power
     assert +(+reactive_power) == reactive_power
 
+    apparent_power = ApparentPower.from_volt_amperes(1000.0)
+    assert +apparent_power == apparent_power
+    assert +(+apparent_power) == apparent_power
+
     voltage = Voltage.from_volts(230.0)
     assert +voltage == voltage
     assert +(+voltage) == voltage
@@ -587,6 +627,9 @@ def test_inf() -> None:
     assert f"{ReactivePower.from_volt_amperes_reactive(float('inf'))}" == "inf VAR"
     assert f"{ReactivePower.from_volt_amperes_reactive(float('-inf'))}" == "-inf VAR"
 
+    assert f"{ApparentPower.from_volt_amperes(float('inf'))}" == "inf VA"
+    assert f"{ApparentPower.from_volt_amperes(float('-inf'))}" == "-inf VA"
+
     assert f"{Voltage.from_volts(float('inf'))}" == "inf V"
     assert f"{Voltage.from_volts(float('-inf'))}" == "-inf V"
 
@@ -607,6 +650,7 @@ def test_nan() -> None:
     """Test proper formating when using nan in quantities."""
     assert f"{Power.from_watts(float('nan'))}" == "nan W"
     assert f"{ReactivePower.from_volt_amperes_reactive(float('nan'))}" == "nan VAR"
+    assert f"{ApparentPower.from_volt_amperes(float('nan'))}" == "nan VA"
     assert f"{Voltage.from_volts(float('nan'))}" == "nan V"
     assert f"{Current.from_amperes(float('nan'))}" == "nan A"
     assert f"{Energy.from_watt_hours(float('nan'))}" == "nan Wh"
@@ -623,6 +667,10 @@ def test_abs() -> None:
     reactive_power = ReactivePower.from_volt_amperes_reactive(1000.0)
     assert abs(reactive_power) == ReactivePower.from_volt_amperes_reactive(1000.0)
     assert abs(-reactive_power) == ReactivePower.from_volt_amperes_reactive(1000.0)
+
+    apparent_power = ApparentPower.from_volt_amperes(1000.0)
+    assert abs(apparent_power) == ApparentPower.from_volt_amperes(1000.0)
+    assert abs(-apparent_power) == ApparentPower.from_volt_amperes(1000.0)
 
     voltage = Voltage.from_volts(230.0)
     assert abs(voltage) == Voltage.from_volts(230.0)
@@ -821,6 +869,7 @@ def test_quantity_divided_by_self(
         Energy.from_kilowatt_hours(500.0),
         Frequency.from_hertz(50),
         Power.from_watts(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
         Quantity(30.0),
         Temperature.from_celsius(30),
@@ -846,7 +895,6 @@ def test_invalid_current_divisions(divisor: Quantity) -> None:
         Quantity(30.0),
         Temperature.from_celsius(30),
         Voltage.from_volts(230.0),
-        ApparentPower.from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
@@ -866,6 +914,7 @@ def test_invalid_energy_divisions(divisor: Quantity) -> None:
         Current.from_amperes(2),
         Energy.from_kilowatt_hours(500.0),
         Power.from_watts(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
         Quantity(30.0),
         Temperature.from_celsius(30),
@@ -890,6 +939,7 @@ def test_invalid_frequency_divisions(divisor: Quantity) -> None:
         Energy.from_kilowatt_hours(500.0),
         Frequency.from_hertz(50),
         Power.from_watts(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
         Quantity(30.0),
         Temperature.from_celsius(30),
@@ -915,6 +965,7 @@ def test_invalid_percentage_divisions(divisor: Quantity) -> None:
         Quantity(30.0),
         Temperature.from_celsius(30),
         ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
@@ -936,6 +987,7 @@ def test_invalid_power_divisions(divisor: Quantity) -> None:
         Frequency.from_hertz(50),
         Power.from_watts(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         Temperature.from_celsius(30),
         Voltage.from_volts(230.0),
     ],
@@ -959,6 +1011,7 @@ def test_invalid_quantity_divisions(divisor: Quantity) -> None:
         Frequency.from_hertz(50),
         Power.from_watts(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         Quantity(30.0),
         Voltage.from_volts(230.0),
     ],
@@ -982,6 +1035,7 @@ def test_invalid_temperature_divisions(divisor: Quantity) -> None:
         Frequency.from_hertz(50),
         Power.from_watts(1000.0),
         ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
         Quantity(30.0),
         Temperature.from_celsius(30),
     ],
@@ -1001,7 +1055,8 @@ def test_invalid_voltage_divisions(divisor: Quantity) -> None:
 # will generate more values, some of which are unsupported by the quantities. See the
 # test comment for more details.
 @pytest.mark.parametrize(
-    "quantity_type", [Power, Voltage, Current, Energy, Frequency, ReactivePower]
+    "quantity_type",
+    [Power, Voltage, Current, Energy, Frequency, ReactivePower, ApparentPower],
 )
 @pytest.mark.parametrize("exponent", [0, 3, 6, 9])
 @hypothesis.settings(
