@@ -2,8 +2,16 @@
 
 ## Summary
 
-This is the initial release, extracted from the [SDK v1.0.0rc601](https://github.com/frequenz-floss/frequenz-sdk-python/releases/tag/v1.0.0-rc601).
+- This is the initial release, extracted from the [SDK v1.0.0rc601](https://github.com/frequenz-floss/frequenz-sdk-python/releases/tag/v1.0.0-rc601).
+
+## Upgrading
+
+<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ## New Features
 
-- Added support for `__round__` (`round(quantity)`), `__pos__` (`+quantity`) and `__mod__` (`quantity % quantity`) operators.
+- Add `QuantityT` type alias for `Quantity` and `QuantityLike` types.
+
+## Bug Fixes
+
+<!-- Here goes notable bug fixes that are worth a special mention or explanation -->

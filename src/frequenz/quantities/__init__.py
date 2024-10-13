@@ -76,6 +76,7 @@ Example:
     ```
 """
 
+from typing import TypeVar
 
 from ._current import Current
 from ._energy import Energy
@@ -86,13 +87,26 @@ from ._quantity import Quantity
 from ._temperature import Temperature
 from ._voltage import Voltage
 
-__all__ = [
+QuantityT = TypeVar(
+    "QuantityT",
+    "Quantity",
     "Current",
     "Energy",
     "Frequency",
     "Percentage",
     "Power",
+    "Temperature",
+    "Voltage",
+)
+
+__all__ = [
+    "QuantityT",
     "Quantity",
+    "Current",
+    "Energy",
+    "Frequency",
+    "Percentage",
+    "Power",
     "Temperature",
     "Voltage",
 ]
