@@ -3,6 +3,7 @@
 
 """Tests for quantity types."""
 
+# pylint: disable=too-many-lines
 import inspect
 from datetime import timedelta
 from typing import Callable
