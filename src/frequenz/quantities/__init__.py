@@ -77,12 +77,14 @@ Example:
 """
 
 
+from ._apparent_power import ApparentPower
 from ._current import Current
 from ._energy import Energy
 from ._frequency import Frequency
 from ._percentage import Percentage
 from ._power import Power
 from ._quantity import Quantity
+from ._reactive_power import ReactivePower
 from ._temperature import Temperature
 from ._voltage import Voltage
 
@@ -93,6 +95,8 @@ __all__ = [
     "Percentage",
     "Power",
     "Quantity",
+    "ReactivePower",
+    "ApparentPower",
     "Temperature",
     "Voltage",
 ]
