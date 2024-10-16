@@ -12,10 +12,8 @@ from typing import TYPE_CHECKING, Self, overload
 from ._quantity import NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
-    from ._apparent_power import ApparentPower
     from ._percentage import Percentage
     from ._power import Power
-    from ._reactive_power import ReactivePower
 
 
 class Energy(
@@ -162,30 +160,8 @@ class Energy(
             A duration from dividing this energy by the given power.
         """
 
-    @overload
-    def __truediv__(self, power: ReactivePower, /) -> timedelta:
-        """Return a duration from dividing this energy by the given power.
-
-        Args:
-            power: The power to divide by.
-
-        Returns:
-            A duration from dividing this energy by the given power.
-        """
-
-    @overload
-    def __truediv__(self, power: ApparentPower, /) -> timedelta:
-        """Return a duration from dividing this energy by the given power.
-
-        Args:
-            power: The power to divide by.
-
-        Returns:
-            A duration from dividing this energy by the given power.
-        """
-
     def __truediv__(
-        self, other: float | Self | timedelta | Power | ReactivePower | ApparentPower, /
+        self, other: float | Self | timedelta | Power, /
     ) -> Self | float | Power | timedelta:
         """Return a power or duration from dividing this energy by the given value.
 
@@ -195,13 +171,7 @@ class Energy(
         Returns:
             A power or duration from dividing this energy by the given value.
         """
-        from ._apparent_power import (  # pylint: disable=import-outside-toplevel
-            ApparentPower,
-        )
         from ._power import Power  # pylint: disable=import-outside-toplevel
-        from ._reactive_power import (  # pylint: disable=import-outside-toplevel
-            ReactivePower,
-        )
 
         match other:
             case float():
@@ -210,7 +180,7 @@ class Energy(
                 return self._base_value / other._base_value
             case timedelta():
                 return Power._new(self._base_value / (other.total_seconds() / 3600.0))
-            case Power() | ReactivePower() | ApparentPower():
+            case Power():
                 return timedelta(
                     seconds=(self._base_value / other._base_value) * 3600.0
                 )

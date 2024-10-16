@@ -6,14 +6,12 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING, Self, overload
 
 from ._quantity import NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._current import Current
-    from ._energy import Energy
     from ._percentage import Percentage
     from ._voltage import Voltage
 
@@ -119,15 +117,7 @@ class ReactivePower(
         """
         return self._base_value / 1e6
 
-    # We need the ignore here because otherwise mypy will give this error:
-    # > Overloaded operator methods can't have wider argument types in overrides
-    # The problem seems to be when the other type implements an **incompatible**
-    # __rmul__ method, which is not the case here, so we should be safe.
-    # Please see this example:
-    # https://github.com/python/mypy/blob/c26f1297d4f19d2d1124a30efc97caebb8c28616/test-data/unit/check-overloading.test#L4738C1-L4769C55
-    # And a discussion in a mypy issue here:
-    # https://github.com/python/mypy/issues/4985#issuecomment-389692396
-    @overload  # type: ignore[override]
+    @overload
     def __mul__(self, scalar: float, /) -> Self:
         """Scale this power by a scalar.
 
@@ -149,18 +139,7 @@ class ReactivePower(
             The scaled power.
         """
 
-    @overload
-    def __mul__(self, other: timedelta, /) -> Energy:
-        """Return an energy from multiplying this power by the given duration.
-
-        Args:
-            other: The duration to multiply by.
-
-        Returns:
-            The calculated energy.
-        """
-
-    def __mul__(self, other: float | Percentage | timedelta, /) -> Self | Energy:
+    def __mul__(self, other: float | Percentage, /) -> Self:
         """Return a power or energy from multiplying this power by the given value.
 
         Args:
@@ -169,18 +148,22 @@ class ReactivePower(
         Returns:
             A power or energy.
         """
-        from ._energy import Energy  # pylint: disable=import-outside-toplevel
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match other:
             case float() | Percentage():
                 return super().__mul__(other)
-            case timedelta():
-                return Energy._new(self._base_value * other.total_seconds() / 3600.0)
             case _:
                 return NotImplemented
 
-    # See the comment for ReactivePower.__mul__ for why we need the ignore here.
+    # We need the ignore here because otherwise mypy will give this error:
+    # > Overloaded operator methods can't have wider argument types in overrides
+    # The problem seems to be when the other type implements an **incompatible**
+    # __rmul__ method, which is not the case here, so we should be safe.
+    # Please see this example:
+    # https://github.com/python/mypy/blob/c26f1297d4f19d2d1124a30efc97caebb8c28616/test-data/unit/check-overloading.test#L4738C1-L4769C55
+    # And a discussion in a mypy issue here:
+    # https://github.com/python/mypy/issues/4985#issuecomment-389692396
     @overload  # type: ignore[override]
     def __truediv__(self, other: float, /) -> Self:
         """Divide this power by a scalar.

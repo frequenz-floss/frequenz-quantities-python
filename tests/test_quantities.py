@@ -495,31 +495,21 @@ def test_temperature() -> None:
         Temperature(1.0, exponent=0)
 
 
-@pytest.mark.parametrize(
-    "power",
-    [
-        Power.from_watts(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-    ],
-    ids=lambda q: q.__class__.__name__,
-)
-def test_quantity_compositions(power: Power | ReactivePower | ApparentPower) -> None:
+def test_quantity_compositions() -> None:
     """Test the composition of quantities."""
+    power = Power.from_watts(1000.0)
     voltage = Voltage.from_volts(230.0)
     current = Current.from_amperes(4.3478260869565215)
     energy = Energy.from_kilowatt_hours(6.2)
 
     assert power / voltage == current
     assert power / current == voltage
+    assert power == voltage * current
+    assert power == current * voltage
 
     assert energy / power == timedelta(hours=6.2)
     assert energy == power * timedelta(hours=6.2)
-
-    if isinstance(power, Power):
-        assert power == voltage * current
-        assert power == current * voltage
-        assert energy / timedelta(hours=6.2) == power
+    assert energy / timedelta(hours=6.2) == power
 
 
 def test_frequency() -> None:
@@ -896,6 +886,8 @@ def test_invalid_current_divisions(divisor: Quantity) -> None:
         Quantity(30.0),
         Temperature.from_celsius(30),
         Voltage.from_volts(230.0),
+        ReactivePower.from_volt_amperes_reactive(1000.0),
+        ApparentPower.from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
