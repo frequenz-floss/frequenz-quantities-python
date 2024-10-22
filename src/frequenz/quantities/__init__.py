@@ -32,6 +32,10 @@ This library provides the following types:
 - [Temperature][frequenz.quantities.Temperature]: A quantity representing temperature.
 - [Voltage][frequenz.quantities.Voltage]: A quantity representing electric voltage.
 
+Additionally, for each of those types, there is a corresponding marshmallow
+field that can be used to serialize and deserialize the quantities using the
+[QuantitySchema][frequenz.quantities.marshmallow.QuantitySchema] schema.
+
 There is also the unitless [Quantity][frequenz.quantities.Quantity] class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the `Quantity` class directly is discouraged, as it doesn't provide
