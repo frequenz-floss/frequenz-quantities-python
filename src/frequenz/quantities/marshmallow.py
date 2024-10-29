@@ -33,36 +33,25 @@ class _QuantityField(fields.Field):
     they can be used in the TYPE_MAPPING in the `QuantitySchema`.
     Which means this class is not intended to be used directly.
 
-    Instead, we dynamically create QuantityField subclasses for each Quantity
-    that simply set the field_type attribute to the corresponding Quantity
-    subclass.
+    Instead, we use the specific QuantityField subclasses for each Quantity.
+    Each field subclass simply sets the field_type attribute to the corresponding
+    Quantity subclass.
 
     Those subclasses are generated and stored in the QUANTITY_FIELD_CLASSES
     mapping and are used for the TYPE_MAPPING in the `QuantitySchema`.
     """
 
-    def __init__(self, field_type: Type[Quantity], **kwargs: Any) -> None:
-        """
-        Initialize the QuantityField.
-
-        Args:
-            field_type: The specific Quantity subclass (e.g., Percentage, Energy).
-            **kwargs: Additional keyword arguments for the base Field.
-
-        Raises:
-            TypeError: If field_type is not a subclass of Quantity.
-        """
-        super().__init__(**kwargs)
-        if not issubclass(field_type, Quantity):
-            raise TypeError("field_type must be a subclass of Quantity.")
-        self.field_type = field_type
+    field_type: Type[Quantity] | None = None
+    """The specific Quantity subclass."""
 
     def _serialize(
         self, value: Quantity, attr: str | None, obj: Any, **kwargs: Any
     ) -> Any:
         """Serialize the Quantity object based on per-field configuration."""
-        if not isinstance(value, self.field_type):
-            raise ValidationError(f"Expected {self.field_type.__name__}.")
+        if self.field_type is None or not issubclass(self.field_type, Quantity):
+            raise TypeError(
+                "field_type must be set to a Quantity subclass in the subclass."
+            )
 
         assert self.parent is not None
 
@@ -83,6 +72,11 @@ class _QuantityField(fields.Field):
         self, value: Any, attr: str | None, data: Any, **kwargs: Any
     ) -> Quantity:
         """Deserialize the Quantity object from float or string."""
+        if self.field_type is None or not issubclass(self.field_type, Quantity):
+            raise TypeError(
+                "field_type must be set to a Quantity subclass in the subclass."
+            )
+
         if isinstance(value, str):
             # Use the Quantity's from_string method
             return self.field_type.from_string(value)
@@ -106,29 +100,56 @@ _QUANTITY_SUBCLASSES = [
 ]
 
 
-def _create_quantity_field_class(
-    quantity_subclass: Type[Quantity],
-) -> Type[fields.Field]:
-    """Dynamically create a QuantityField subclass for a given Quantity subclass."""
-    class_name = f"{quantity_subclass.__name__}Field"
+class CurrentField(_QuantityField):
+    """Custom field for Current objects."""
 
-    field_class: Type[fields.Field] = type(
-        class_name,
-        (_QuantityField,),
-        {
-            "__init__": lambda self, **kwargs: super(field_class, self).__init__(
-                field_type=quantity_subclass, **kwargs
-            ),
-            "__module__": __name__,
-        },
-    )
-
-    return field_class
+    field_type = Current
 
 
-QUANTITY_FIELD_CLASSES = {
-    quantity_subclass: _create_quantity_field_class(quantity_subclass)
-    for quantity_subclass in _QUANTITY_SUBCLASSES
+class EnergyField(_QuantityField):
+    """Custom field for Energy objects."""
+
+    field_type = Energy
+
+
+class FrequencyField(_QuantityField):
+    """Custom field for Frequency objects."""
+
+    field_type = Frequency
+
+
+class PercentageField(_QuantityField):
+    """Custom field for Percentage objects."""
+
+    field_type = Percentage
+
+
+class PowerField(_QuantityField):
+    """Custom field for Power objects."""
+
+    field_type = Power
+
+
+class TemperatureField(_QuantityField):
+    """Custom field for Temperature objects."""
+
+    field_type = Temperature
+
+
+class VoltageField(_QuantityField):
+    """Custom field for Voltage objects."""
+
+    field_type = Voltage
+
+
+QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[fields.Field]] = {
+    Current: CurrentField,
+    Energy: EnergyField,
+    Frequency: FrequencyField,
+    Percentage: PercentageField,
+    Power: PowerField,
+    Temperature: TemperatureField,
+    Voltage: VoltageField,
 }
 """Mapping of Quantity subclasses to their corresponding QuantityField subclasses.
 
