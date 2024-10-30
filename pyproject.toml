@@ -65,13 +65,13 @@ dev-mypy = [
   "mypy == 1.11.2",
   "types-Markdown == 3.7.0.20240822",
   # For checking the noxfile, docs/ script, and tests
-  "frequenz-quantities[dev-mkdocs,dev-noxfile,dev-pytest]",
+  "frequenz-quantities[dev-mkdocs,dev-noxfile,dev-pytest,marshmallow]",
 ]
 dev-noxfile = ["nox == 2024.4.15", "frequenz-repo-config[lib] == 0.10.0"]
 dev-pylint = [
   # dev-pytest already defines a dependency to pylint because of the examples
   # For checking the noxfile, docs/ script, and tests
-  "frequenz-quantities[dev-mkdocs,dev-noxfile,dev-pytest]",
+  "frequenz-quantities[dev-mkdocs,dev-noxfile,dev-pytest,marshmallow]",
 ]
 dev-pytest = [
   "pytest == 8.3.3",
@@ -81,9 +81,16 @@ dev-pytest = [
   "pytest-asyncio == 0.24.0",
   "async-solipsism == 0.7",
   "hypothesis == 6.112.2",
+  "frequenz-quantities[marshmallow]",
 ]
+
+marshmallow = [
+  "marshmallow >= 3.0.0, < 4",
+  "marshmallow-dataclass >= 8.0.0, < 9",
+]
+
 dev = [
-  "frequenz-quantities[dev-mkdocs,dev-flake8,dev-formatting,dev-mkdocs,dev-mypy,dev-noxfile,dev-pylint,dev-pytest]",
+  "frequenz-quantities[dev-mkdocs,dev-flake8,dev-formatting,dev-mkdocs,dev-mypy,dev-noxfile,dev-pylint,dev-pytest,marshmallow]",
 ]
 
 [project.urls]
