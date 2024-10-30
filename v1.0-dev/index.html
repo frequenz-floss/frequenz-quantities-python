@@ -262,6 +262,12 @@
   
     
     
+      
+  
+  
+  
+    
+    
       <li class="md-tabs__item">
         <a href="reference/frequenz/quantities/" class="md-tabs__link">
           
@@ -272,6 +278,9 @@
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -422,8 +431,6 @@
     
       
         
-          
-        
       
     
     
@@ -438,19 +445,16 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1" >
         
           
-          
-          <div class="md-nav__link md-nav__container">
-            <a href="reference/frequenz/quantities/" class="md-nav__link ">
-              
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
+            
   
   <span class="md-ellipsis">
     frequenz
   </span>
   
 
-            </a>
-            
-          </div>
+            <span class="md-nav__icon md-icon"></span>
+          </label>
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_1">
@@ -459,6 +463,89 @@
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_1" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="reference/frequenz/quantities/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    quantities
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1_1" id="__nav_2_1_1_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_1_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_1">
+            <span class="md-nav__icon md-icon"></span>
+            quantities
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="reference/frequenz/quantities/marshmallow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    marshmallow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
               
             
           </ul>
@@ -567,6 +654,9 @@ the quantity.</p>
 <li><a class="autorefs autorefs-internal" href="reference/frequenz/quantities/#frequenz.quantities.Temperature">Temperature</a>: A quantity representing temperature.</li>
 <li><a class="autorefs autorefs-internal" href="reference/frequenz/quantities/#frequenz.quantities.Voltage">Voltage</a>: A quantity representing electric voltage.</li>
 </ul>
+<p>Additionally, for each of those types, there is a corresponding marshmallow
+field that can be used to serialize and deserialize the quantities using the
+<a class="autorefs autorefs-internal" href="reference/frequenz/quantities/marshmallow/#frequenz.quantities.marshmallow.QuantitySchema">QuantitySchema</a> schema.</p>
 <p>There is also the unitless <a class="autorefs autorefs-internal" href="reference/frequenz/quantities/#frequenz.quantities.Quantity">Quantity</a> class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the <code>Quantity</code> class directly is discouraged, as it doesn't provide
@@ -666,13 +756,13 @@ any unit conversion methods.</p>
         
         
           
-          <a href="reference/frequenz/quantities/" class="md-footer__link md-footer__link--next" aria-label="Next: quantities">
+          <a href="reference/frequenz/quantities/" class="md-footer__link md-footer__link--next" aria-label="Next: Index">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                quantities
+                Index
               </div>
             </div>
             <div class="md-footer__button md-icon">
