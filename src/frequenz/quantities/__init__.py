@@ -93,6 +93,7 @@ from ._temperature import Temperature
 from ._voltage import Voltage
 
 __all__ = [
+    "ApparentPower",
     "Current",
     "Energy",
     "Frequency",
@@ -100,7 +101,6 @@ __all__ = [
     "Power",
     "Quantity",
     "ReactivePower",
-    "ApparentPower",
     "Temperature",
     "Voltage",
 ]
