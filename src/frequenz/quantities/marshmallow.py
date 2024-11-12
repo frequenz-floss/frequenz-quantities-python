@@ -79,12 +79,18 @@ class _QuantityField(fields.Field):
 
         if isinstance(value, str):
             # Use the Quantity's from_string method
-            return self.field_type.from_string(value)
+            try:
+                return self.field_type.from_string(value)
+            except Exception as error:  # pylint: disable=broad-except
+                raise ValidationError(str(error)) from error
         if isinstance(value, (float, int)):
-            # Use `_new` method for creating instance from base value
-            return self.field_type._new(  # pylint: disable=protected-access
-                float(value)
-            )
+            try:
+                # Use `_new` method for creating instance from base value
+                return self.field_type._new(  # pylint: disable=protected-access
+                    float(value)
+                )
+            except Exception as error:  # pylint: disable=broad-except
+                raise ValidationError(str(error)) from error
 
         raise ValidationError("Invalid input type for QuantityField.")
 
