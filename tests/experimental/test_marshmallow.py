@@ -18,7 +18,7 @@ from frequenz.quantities import (
     Temperature,
     Voltage,
 )
-from frequenz.quantities.marshmallow import QuantitySchema
+from frequenz.quantities.experimental.marshmallow import QuantitySchema
 
 
 @dataclass

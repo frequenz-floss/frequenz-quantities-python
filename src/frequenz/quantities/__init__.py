@@ -36,10 +36,6 @@ This library provides the following types:
 - [Temperature][frequenz.quantities.Temperature]: A quantity representing temperature.
 - [Voltage][frequenz.quantities.Voltage]: A quantity representing electric voltage.
 
-Additionally, for each of those types, there is a corresponding marshmallow
-field that can be used to serialize and deserialize the quantities using the
-[QuantitySchema][frequenz.quantities.marshmallow.QuantitySchema] schema.
-
 There is also the unitless [Quantity][frequenz.quantities.Quantity] class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the `Quantity` class directly is discouraged, as it doesn't provide
@@ -82,6 +78,12 @@ Example:
     except TypeError as e:
         print(f"Error: {e}")  # Error: unsupported operand type(s) for +: 'Power' and 'Voltage'
     ```
+
+This library also provides an [**experimental** module with marshmallow fields and
+a base schema][frequenz.quantities.experimental.marshmallow] to serialize and
+deserialize quantities using the marshmallow library. To use it, you need to make sure
+to install this package with the `marshmallow` optional dependencies (e.g.
+`pip install frequenz-quantities[marshmallow]`).
 """
 
 
