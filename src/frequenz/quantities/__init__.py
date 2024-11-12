@@ -24,11 +24,15 @@ the quantity.
 
 This library provides the following types:
 
+- [ApparentPower][frequenz.quantities.ApparentPower]: A quantity representing apparent
+  power.
 - [Current][frequenz.quantities.Current]: A quantity representing an electric current.
 - [Energy][frequenz.quantities.Energy]: A quantity representing energy.
 - [Frequency][frequenz.quantities.Frequency]: A quantity representing frequency.
 - [Percentage][frequenz.quantities.Percentage]: A quantity representing a percentage.
 - [Power][frequenz.quantities.Power]: A quantity representing power.
+- [ReactivePower][frequenz.quantities.ReactivePower]: A quantity representing reactive
+  power.
 - [Temperature][frequenz.quantities.Temperature]: A quantity representing temperature.
 - [Voltage][frequenz.quantities.Voltage]: A quantity representing electric voltage.
 
