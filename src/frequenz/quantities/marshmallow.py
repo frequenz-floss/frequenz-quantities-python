@@ -7,12 +7,14 @@ from typing import Any, Type
 
 from marshmallow import Schema, ValidationError, fields
 
+from ._apparent_power import ApparentPower
 from ._current import Current
 from ._energy import Energy
 from ._frequency import Frequency
 from ._percentage import Percentage
 from ._power import Power
 from ._quantity import Quantity
+from ._reactive_power import ReactivePower
 from ._temperature import Temperature
 from ._voltage import Voltage
 
@@ -79,25 +81,39 @@ class _QuantityField(fields.Field):
 
         if isinstance(value, str):
             # Use the Quantity's from_string method
-            return self.field_type.from_string(value)
+            try:
+                return self.field_type.from_string(value)
+            except Exception as error:  # pylint: disable=broad-except
+                raise ValidationError(str(error)) from error
         if isinstance(value, (float, int)):
-            # Use `_new` method for creating instance from base value
-            return self.field_type._new(  # pylint: disable=protected-access
-                float(value)
-            )
+            try:
+                # Use `_new` method for creating instance from base value
+                return self.field_type._new(  # pylint: disable=protected-access
+                    float(value)
+                )
+            except Exception as error:  # pylint: disable=broad-except
+                raise ValidationError(str(error)) from error
 
         raise ValidationError("Invalid input type for QuantityField.")
 
 
 _QUANTITY_SUBCLASSES = [
+    ApparentPower,
     Current,
     Energy,
     Frequency,
     Percentage,
     Power,
+    ReactivePower,
     Temperature,
     Voltage,
 ]
+
+
+class ApparentPowerField(_QuantityField):
+    """Custom field for ApparentPower objects."""
+
+    field_type = ApparentPower
 
 
 class CurrentField(_QuantityField):
@@ -130,6 +146,12 @@ class PowerField(_QuantityField):
     field_type = Power
 
 
+class ReactivePowerField(_QuantityField):
+    """Custom field for ReactivePower objects."""
+
+    field_type = ReactivePower
+
+
 class TemperatureField(_QuantityField):
     """Custom field for Temperature objects."""
 
@@ -143,11 +165,13 @@ class VoltageField(_QuantityField):
 
 
 QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[fields.Field]] = {
+    ApparentPower: ApparentPowerField,
     Current: CurrentField,
     Energy: EnergyField,
     Frequency: FrequencyField,
     Percentage: PercentageField,
     Power: PowerField,
+    ReactivePower: ReactivePowerField,
     Temperature: TemperatureField,
     Voltage: VoltageField,
 }

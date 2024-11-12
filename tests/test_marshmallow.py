@@ -9,7 +9,15 @@ from typing import Any, Self, cast
 
 from marshmallow_dataclass import class_schema
 
-from frequenz.quantities import Energy, Percentage, Power, Temperature, Voltage
+from frequenz.quantities import (
+    ApparentPower,
+    Energy,
+    Percentage,
+    Power,
+    ReactivePower,
+    Temperature,
+    Voltage,
+)
 from frequenz.quantities.marshmallow import QuantitySchema
 
 
@@ -26,11 +34,29 @@ class Config:
         },
     )
 
+    my_apparent_power_field: ApparentPower = field(
+        default_factory=lambda: ApparentPower.from_volt_amperes(120.0),
+        metadata={
+            "metadata": {
+                "description": "An apparent power field",
+            },
+        },
+    )
+
     my_power_field: Power = field(
         default_factory=lambda: Power.from_watts(100.0),
         metadata={
             "metadata": {
                 "description": "A power field",
+            },
+        },
+    )
+
+    my_reactive_power_field: ReactivePower = field(
+        default_factory=lambda: ReactivePower.from_volt_amperes_reactive(130.0),
+        metadata={
+            "metadata": {
+                "description": "A reactive power field",
             },
         },
     )
@@ -83,7 +109,9 @@ def test_config_schema_load() -> None:
     config = Config.load(
         {
             "my_percent_field": 50.0,
+            "my_apparent_power_field": 150.0,
             "my_power_field": 200.0,
+            "my_reactive_power_field": 250.0,
             "my_energy_field": 200.0,
             "voltage_always_string": 250_000.0,
             "temp_never_string": 100.0,
@@ -91,7 +119,11 @@ def test_config_schema_load() -> None:
     )
 
     assert config.my_percent_field == Percentage.from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(150.0)
     assert config.my_power_field == Power.from_watts(200.0)
+    assert config.my_reactive_power_field == ReactivePower.from_volt_amperes_reactive(
+        250.0
+    )
     assert config.my_energy_field == Energy.from_watt_hours(200.0)
     assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
     assert config.temp_never_string == Temperature.from_celsius(100.0)
@@ -102,7 +134,11 @@ def test_config_schema_load_defaults() -> None:
     config = Config.load({})
 
     assert config.my_percent_field == Percentage.from_percent(25.0)
+    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(120.0)
     assert config.my_power_field == Power.from_watts(100.0)
+    assert config.my_reactive_power_field == ReactivePower.from_volt_amperes_reactive(
+        130.0
+    )
     assert config.my_energy_field == Energy.from_watt_hours(100.0)
     assert config.voltage_always_string == Voltage.from_kilovolts(200)
     assert config.temp_never_string == Temperature.from_celsius(100.0)
@@ -113,7 +149,9 @@ def test_config_schema_load_from_string() -> None:
     config = Config.load(
         {
             "my_percent_field": "50 %",
+            "my_apparent_power_field": "150 MVA",
             "my_power_field": "200 W",
+            "my_reactive_power_field": "250 mVAR",
             "my_energy_field": "200 Wh",
             "voltage_always_string": "250 kV",
             "temp_never_string": "10 °C",
@@ -121,7 +159,12 @@ def test_config_schema_load_from_string() -> None:
     )
 
     assert config.my_percent_field == Percentage.from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower.from_mega_volt_amperes(150.0)
     assert config.my_power_field == Power.from_watts(200.0)
+    assert (
+        config.my_reactive_power_field
+        == ReactivePower.from_milli_volt_amperes_reactive(250.0)
+    )
     assert config.my_energy_field == Energy.from_watt_hours(200.0)
     assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
     assert config.temp_never_string == Temperature.from_celsius(10.0)
@@ -132,7 +175,9 @@ def test_config_schema_load_from_mixed() -> None:
     config = Config.load(
         {
             "my_percent_field": "50 %",
+            "my_apparent_power_field": 150.0,
             "my_power_field": 200,
+            "my_reactive_power_field": "250 mVAR",
             "my_energy_field": "200 Wh",
             "voltage_always_string": 250_000,
             "temp_never_string": "10 °C",
@@ -140,7 +185,12 @@ def test_config_schema_load_from_mixed() -> None:
     )
 
     assert config.my_percent_field == Percentage.from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(150.0)
     assert config.my_power_field == Power.from_watts(200.0)
+    assert (
+        config.my_reactive_power_field
+        == ReactivePower.from_milli_volt_amperes_reactive(250.0)
+    )
     assert config.my_energy_field == Energy.from_watt_hours(200.0)
     assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
     assert config.temp_never_string == Temperature.from_celsius(10.0)
@@ -150,7 +200,9 @@ def test_config_schema_dump_default_float() -> None:
     """Test that the values are correctly dumped."""
     config = Config(
         my_percent_field=Percentage.from_percent(50.0),
+        my_apparent_power_field=ApparentPower.from_volt_amperes(150.0),
         my_power_field=Power.from_watts(200.0),
+        my_reactive_power_field=ReactivePower.from_volt_amperes_reactive(250.0),
         my_energy_field=Energy.from_watt_hours(200.0),
         voltage_always_string=Voltage.from_kilovolts(250.0),
         temp_never_string=Temperature.from_celsius(10.0),
@@ -160,7 +212,9 @@ def test_config_schema_dump_default_float() -> None:
 
     assert dumped == {
         "my_percent_field": 50.0,
+        "my_apparent_power_field": 150.0,
         "my_power_field": 200.0,
+        "my_reactive_power_field": 250.0,
         "my_energy_field": 200.0,
         "voltage_always_string": "250 kV",
         "temp_never_string": 10.0,
@@ -171,7 +225,9 @@ def test_config_schema_dump_default_string() -> None:
     """Test that the values are correctly dumped."""
     config = Config(
         my_percent_field=Percentage.from_percent(50.0),
+        my_apparent_power_field=ApparentPower.from_volt_amperes(150.0),
         my_power_field=Power.from_watts(200.0),
+        my_reactive_power_field=ReactivePower.from_volt_amperes_reactive(250.0),
         my_energy_field=Energy.from_watt_hours(200.0),
         voltage_always_string=Voltage.from_kilovolts(250.0),
         temp_never_string=Temperature.from_celsius(10.0),
@@ -181,7 +237,9 @@ def test_config_schema_dump_default_string() -> None:
 
     assert dumped == {
         "my_percent_field": "50 %",
+        "my_apparent_power_field": "150 VA",
         "my_power_field": "200 W",
+        "my_reactive_power_field": "250 VAR",
         "my_energy_field": "200 Wh",
         "voltage_always_string": "250 kV",
         "temp_never_string": 10.0,
