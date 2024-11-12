@@ -7,12 +7,14 @@ from typing import Any, Type
 
 from marshmallow import Schema, ValidationError, fields
 
+from ._apparent_power import ApparentPower
 from ._current import Current
 from ._energy import Energy
 from ._frequency import Frequency
 from ._percentage import Percentage
 from ._power import Power
 from ._quantity import Quantity
+from ._reactive_power import ReactivePower
 from ._temperature import Temperature
 from ._voltage import Voltage
 
@@ -96,14 +98,22 @@ class _QuantityField(fields.Field):
 
 
 _QUANTITY_SUBCLASSES = [
+    ApparentPower,
     Current,
     Energy,
     Frequency,
     Percentage,
     Power,
+    ReactivePower,
     Temperature,
     Voltage,
 ]
+
+
+class ApparentPowerField(_QuantityField):
+    """Custom field for ApparentPower objects."""
+
+    field_type = ApparentPower
 
 
 class CurrentField(_QuantityField):
@@ -136,6 +146,12 @@ class PowerField(_QuantityField):
     field_type = Power
 
 
+class ReactivePowerField(_QuantityField):
+    """Custom field for ReactivePower objects."""
+
+    field_type = ReactivePower
+
+
 class TemperatureField(_QuantityField):
     """Custom field for Temperature objects."""
 
@@ -149,11 +165,13 @@ class VoltageField(_QuantityField):
 
 
 QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[fields.Field]] = {
+    ApparentPower: ApparentPowerField,
     Current: CurrentField,
     Energy: EnergyField,
     Frequency: FrequencyField,
     Percentage: PercentageField,
     Power: PowerField,
+    ReactivePower: ReactivePowerField,
     Temperature: TemperatureField,
     Voltage: VoltageField,
 }
