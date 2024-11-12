@@ -1,22 +1,33 @@
 # License: All rights reserved
 # Copyright © 2024 Frequenz Energy-as-a-Service GmbH
 
-"""Custom marshmallow fields and schema."""
+"""Custom marshmallow fields and schema.
+
+This module provides custom marshmallow fields for quantities and
+a [QuantitySchema][frequenz.quantities.experimental.marshmallow.QuantitySchema] class to
+be used as base schema for dataclasses containing quantities.
+
+Danger:
+    This module contains experimental features for which the API is not yet stable.
+
+    Any module or class in this package may be removed or changed in a future release,
+    even in minor or patch releases.
+"""
 
 from typing import Any, Type
 
 from marshmallow import Schema, ValidationError, fields
 
-from ._apparent_power import ApparentPower
-from ._current import Current
-from ._energy import Energy
-from ._frequency import Frequency
-from ._percentage import Percentage
-from ._power import Power
-from ._quantity import Quantity
-from ._reactive_power import ReactivePower
-from ._temperature import Temperature
-from ._voltage import Voltage
+from .._apparent_power import ApparentPower
+from .._current import Current
+from .._energy import Energy
+from .._frequency import Frequency
+from .._percentage import Percentage
+from .._power import Power
+from .._quantity import Quantity
+from .._reactive_power import ReactivePower
+from .._temperature import Temperature
+from .._voltage import Voltage
 
 
 class _QuantityField(fields.Field):
@@ -194,7 +205,8 @@ class QuantitySchema(Schema):
     from dataclasses import dataclass, field
     from marshmallow_dataclass import class_schema
     from marshmallow.validate import Range
-    from frequenz.quantities import Percentage, QuantitySchema
+    from frequenz.quantities import Percentage
+    from frequenz.quantities.experimental.marshmallow import QuantitySchema
     from typing import cast
 
     @dataclass
