@@ -16,7 +16,7 @@
         <link rel="prev" href="../../..">
       
       
-        <link rel="next" href="marshmallow/">
+        <link rel="next" href="experimental/">
       
       
       <link rel="icon" href="../../../_img/logo.png">
@@ -530,8 +530,64 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_1_1_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="experimental/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    experimental
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_1_1_2" id="__nav_2_1_1_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_1_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            experimental
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="marshmallow/" class="md-nav__link">
+      <a href="experimental/marshmallow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -540,6 +596,14 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -3967,17 +4031,18 @@ tried to be mitigated.</p>
 the quantity.</p>
 <p>This library provides the following types:</p>
 <ul>
+<li><a class="autorefs autorefs-internal" href="#frequenz.quantities.ApparentPower">ApparentPower</a>: A quantity representing apparent
+  power.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Current">Current</a>: A quantity representing an electric current.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Energy">Energy</a>: A quantity representing energy.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Frequency">Frequency</a>: A quantity representing frequency.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Percentage">Percentage</a>: A quantity representing a percentage.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Power">Power</a>: A quantity representing power.</li>
+<li><a class="autorefs autorefs-internal" href="#frequenz.quantities.ReactivePower">ReactivePower</a>: A quantity representing reactive
+  power.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Temperature">Temperature</a>: A quantity representing temperature.</li>
 <li><a class="autorefs autorefs-internal" href="#frequenz.quantities.Voltage">Voltage</a>: A quantity representing electric voltage.</li>
 </ul>
-<p>Additionally, for each of those types, there is a corresponding marshmallow
-field that can be used to serialize and deserialize the quantities using the
-<a class="autorefs autorefs-internal" href="marshmallow/#frequenz.quantities.marshmallow.QuantitySchema">QuantitySchema</a> schema.</p>
 <p>There is also the unitless <a class="autorefs autorefs-internal" href="#frequenz.quantities.Quantity">Quantity</a> class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the <code>Quantity</code> class directly is discouraged, as it doesn't provide
@@ -4021,7 +4086,12 @@ any unit conversion methods.</p>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Error: unsupported operand type(s) for +: &#39;Power&#39; and &#39;Voltage&#39;</span>
 </span></code></pre></div>
-</details>
+</details>        <p>This library also provides an <a class="autorefs autorefs-internal" href="experimental/marshmallow/#frequenz.quantities.experimental.marshmallow"><strong>experimental</strong> module with marshmallow fields and
+a base schema</a> to serialize and
+deserialize quantities using the marshmallow library. To use it, you need to make sure
+to install this package with the <code>marshmallow</code> optional dependencies (e.g.
+<code>pip install frequenz-quantities[marshmallow]</code>).</p>
+
 
 
 
@@ -37820,13 +37890,13 @@ symbol.</p>
         
         
           
-          <a href="marshmallow/" class="md-footer__link md-footer__link--next" aria-label="Next: marshmallow">
+          <a href="experimental/" class="md-footer__link md-footer__link--next" aria-label="Next: Index">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                marshmallow
+                Index
               </div>
             </div>
             <div class="md-footer__button md-icon">
