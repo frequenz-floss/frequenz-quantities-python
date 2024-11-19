@@ -2,13 +2,16 @@
 
 ## Summary
 
-This first stable release of `frequenz-quantities`!
+<!-- Here goes a general summary of what this release is about -->
 
-The code is based on the quantities code in the [`frequenz-sdk` v1.0.0rc601](https://github.com/frequenz-floss/frequenz-sdk-python/releases/tag/v1.0.0-rc601) but with some new features and improvements.
+## Upgrading
+
+<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
 
 ## New Features
 
-- Added support for `__round__` (`round(quantity)`), `__pos__` (`+quantity`) and `__mod__` (`quantity % quantity`) operators.
-- Add `ReactivePower` quantity.
-- Add `ApparentPower` quantity.
-- Add an **experimental** marshmallow module available when adding `[marshmallow]` to the requirements. This module provides `marshmallow` fields for quantities and a `QuantitySchema` to use as a base schema that supports loading and dumping quantities.
+<!-- Here goes the main new features and examples or instructions on how to use them -->
+
+## Bug Fixes
+
+<!-- Here goes notable bug fixes that are worth a special mention or explanation -->
