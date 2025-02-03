@@ -69,10 +69,12 @@ class _QuantityField(fields.Field):
         assert self.parent is not None
 
         # Determine the serialization format
-        serialize_as_string = self.metadata.get(
-            "serialize_as_string",
-            self.parent.context.get("serialize_as_string_default", False),
+        default = (
+            False
+            if self.parent.context is None
+            else self.parent.context.get("serialize_as_string_default", False)
         )
+        serialize_as_string = self.metadata.get("serialize_as_string", default)
 
         if serialize_as_string:
             # Use the Quantity's native string representation (includes unit)
