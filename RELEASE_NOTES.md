@@ -6,7 +6,7 @@
 
 ## Upgrading
 
-<!-- Here goes notes on how to upgrade from previous versions, including deprecations and what they should be replaced with -->
+- `typing-extensions` minimal version was bumped to 4.6.0 to be compatible with Python3.12. You might need to upgrade it in your project too.
 
 ## New Features
 
