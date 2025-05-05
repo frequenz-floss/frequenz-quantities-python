@@ -18,7 +18,10 @@ from frequenz.quantities import (
     Temperature,
     Voltage,
 )
-from frequenz.quantities.experimental.marshmallow import QuantitySchema
+from frequenz.quantities.experimental.marshmallow import (
+    QuantitySchema,
+    serialize_as_string_default,
+)
 
 
 @dataclass
@@ -74,9 +77,9 @@ class Config:
         default_factory=lambda: Voltage.from_kilovolts(200.0),
         metadata={
             "metadata": {
-                "description": "A voltage field that is always serialized as a string",
-                "serialize_as_string": True,
+                "description": "A voltage field that is always serialized as a string"
             },
+            "serialize_as_string": True,
         },
     )
 
@@ -84,9 +87,9 @@ class Config:
         default_factory=lambda: Temperature.from_celsius(100.0),
         metadata={
             "metadata": {
-                "description": "A temperature field that is never serialized as a string",
-                "serialize_as_string": False,
+                "description": "A temperature field that is never serialized as a string"
             },
+            "serialize_as_string": False,
         },
     )
 
@@ -96,11 +99,10 @@ class Config:
         schema = class_schema(cls, base_schema=QuantitySchema)()
         return cast(Self, schema.load(config))
 
-    def dump(self, serialize_as_string_default: bool = False) -> dict[str, Any]:
+    def dump(self, use_string: bool = False) -> dict[str, Any]:
         """Dump the configuration."""
-        schema = class_schema(Config, base_schema=QuantitySchema)(
-            serialize_as_string_default=serialize_as_string_default  # type: ignore[call-arg]
-        )
+        schema = class_schema(Config, base_schema=QuantitySchema)()
+        serialize_as_string_default.set(use_string)
         return cast(dict[str, Any], schema.dump(self))
 
 
@@ -208,7 +210,7 @@ def test_config_schema_dump_default_float() -> None:
         temp_never_string=Temperature.from_celsius(10.0),
     )
 
-    dumped = config.dump(serialize_as_string_default=False)
+    dumped = config.dump(use_string=False)
 
     assert dumped == {
         "my_percent_field": 50.0,
@@ -233,7 +235,7 @@ def test_config_schema_dump_default_string() -> None:
         temp_never_string=Temperature.from_celsius(10.0),
     )
 
-    dumped = config.dump(serialize_as_string_default=True)
+    dumped = config.dump(use_string=True)
 
     assert dumped == {
         "my_percent_field": "50 %",

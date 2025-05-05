@@ -85,7 +85,7 @@ dev-pytest = [
 ]
 
 marshmallow = [
-  "marshmallow >= 3.0.0, < 4",
+  "marshmallow >= 3.0.0, < 5",
   "marshmallow-dataclass >= 8.0.0, < 9",
 ]
 
