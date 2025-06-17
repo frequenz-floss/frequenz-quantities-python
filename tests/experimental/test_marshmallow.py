@@ -25,8 +25,8 @@ from frequenz.quantities.experimental.marshmallow import QuantitySchema
 class Config:
     """Configuration test class."""
 
-    my_percent_field: Percentage = field(
-        default_factory=lambda: Percentage.from_percent(25.0),
+    my_percent_field: Percentage[float] = field(
+        default_factory=lambda: Percentage[float].from_percent(25.0),
         metadata={
             "metadata": {
                 "description": "A percentage field",
@@ -34,8 +34,8 @@ class Config:
         },
     )
 
-    my_apparent_power_field: ApparentPower = field(
-        default_factory=lambda: ApparentPower.from_volt_amperes(120.0),
+    my_apparent_power_field: ApparentPower[float] = field(
+        default_factory=lambda: ApparentPower[float].from_volt_amperes(120.0),
         metadata={
             "metadata": {
                 "description": "An apparent power field",
@@ -43,8 +43,8 @@ class Config:
         },
     )
 
-    my_power_field: Power = field(
-        default_factory=lambda: Power.from_watts(100.0),
+    my_power_field: Power[float] = field(
+        default_factory=lambda: Power[float].from_watts(100.0),
         metadata={
             "metadata": {
                 "description": "A power field",
@@ -52,8 +52,8 @@ class Config:
         },
     )
 
-    my_reactive_power_field: ReactivePower = field(
-        default_factory=lambda: ReactivePower.from_volt_amperes_reactive(130.0),
+    my_reactive_power_field: ReactivePower[float] = field(
+        default_factory=lambda: ReactivePower[float].from_volt_amperes_reactive(130.0),
         metadata={
             "metadata": {
                 "description": "A reactive power field",
@@ -61,8 +61,8 @@ class Config:
         },
     )
 
-    my_energy_field: Energy = field(
-        default_factory=lambda: Energy.from_watt_hours(100.0),
+    my_energy_field: Energy[float] = field(
+        default_factory=lambda: Energy[float].from_watt_hours(100.0),
         metadata={
             "metadata": {
                 "description": "An energy field",
@@ -70,8 +70,8 @@ class Config:
         },
     )
 
-    voltage_always_string: Voltage = field(
-        default_factory=lambda: Voltage.from_kilovolts(200.0),
+    voltage_always_string: Voltage[float] = field(
+        default_factory=lambda: Voltage[float].from_kilovolts(200.0),
         metadata={
             "metadata": {
                 "description": "A voltage field that is always serialized as a string",
@@ -80,8 +80,8 @@ class Config:
         },
     )
 
-    temp_never_string: Temperature = field(
-        default_factory=lambda: Temperature.from_celsius(100.0),
+    temp_never_string: Temperature[float] = field(
+        default_factory=lambda: Temperature[float].from_celsius(100.0),
         metadata={
             "metadata": {
                 "description": "A temperature field that is never serialized as a string",
@@ -118,30 +118,34 @@ def test_config_schema_load() -> None:
         }
     )
 
-    assert config.my_percent_field == Percentage.from_percent(50.0)
-    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(150.0)
-    assert config.my_power_field == Power.from_watts(200.0)
-    assert config.my_reactive_power_field == ReactivePower.from_volt_amperes_reactive(
-        250.0
+    assert config.my_percent_field == Percentage[float].from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower[float].from_volt_amperes(
+        150.0
     )
-    assert config.my_energy_field == Energy.from_watt_hours(200.0)
-    assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
-    assert config.temp_never_string == Temperature.from_celsius(100.0)
+    assert config.my_power_field == Power[float].from_watts(200.0)
+    assert config.my_reactive_power_field == ReactivePower[
+        float
+    ].from_volt_amperes_reactive(250.0)
+    assert config.my_energy_field == Energy[float].from_watt_hours(200.0)
+    assert config.voltage_always_string == Voltage[float].from_kilovolts(250.0)
+    assert config.temp_never_string == Temperature[float].from_celsius(100.0)
 
 
 def test_config_schema_load_defaults() -> None:
     """Test that the defaults are correctly loaded."""
     config = Config.load({})
 
-    assert config.my_percent_field == Percentage.from_percent(25.0)
-    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(120.0)
-    assert config.my_power_field == Power.from_watts(100.0)
-    assert config.my_reactive_power_field == ReactivePower.from_volt_amperes_reactive(
-        130.0
+    assert config.my_percent_field == Percentage[float].from_percent(25.0)
+    assert config.my_apparent_power_field == ApparentPower[float].from_volt_amperes(
+        120.0
     )
-    assert config.my_energy_field == Energy.from_watt_hours(100.0)
-    assert config.voltage_always_string == Voltage.from_kilovolts(200)
-    assert config.temp_never_string == Temperature.from_celsius(100.0)
+    assert config.my_power_field == Power[float].from_watts(100.0)
+    assert config.my_reactive_power_field == ReactivePower[
+        float
+    ].from_volt_amperes_reactive(130.0)
+    assert config.my_energy_field == Energy[float].from_watt_hours(100.0)
+    assert config.voltage_always_string == Voltage[float].from_kilovolts(200)
+    assert config.temp_never_string == Temperature[float].from_celsius(100.0)
 
 
 def test_config_schema_load_from_string() -> None:
@@ -158,16 +162,17 @@ def test_config_schema_load_from_string() -> None:
         }
     )
 
-    assert config.my_percent_field == Percentage.from_percent(50.0)
-    assert config.my_apparent_power_field == ApparentPower.from_mega_volt_amperes(150.0)
-    assert config.my_power_field == Power.from_watts(200.0)
-    assert (
-        config.my_reactive_power_field
-        == ReactivePower.from_milli_volt_amperes_reactive(250.0)
-    )
-    assert config.my_energy_field == Energy.from_watt_hours(200.0)
-    assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
-    assert config.temp_never_string == Temperature.from_celsius(10.0)
+    assert config.my_percent_field == Percentage[float].from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower[
+        float
+    ].from_mega_volt_amperes(150.0)
+    assert config.my_power_field == Power[float].from_watts(200.0)
+    assert config.my_reactive_power_field == ReactivePower[
+        float
+    ].from_milli_volt_amperes_reactive(250.0)
+    assert config.my_energy_field == Energy[float].from_watt_hours(200.0)
+    assert config.voltage_always_string == Voltage[float].from_kilovolts(250.0)
+    assert config.temp_never_string == Temperature[float].from_celsius(10.0)
 
 
 def test_config_schema_load_from_mixed() -> None:
@@ -184,28 +189,29 @@ def test_config_schema_load_from_mixed() -> None:
         }
     )
 
-    assert config.my_percent_field == Percentage.from_percent(50.0)
-    assert config.my_apparent_power_field == ApparentPower.from_volt_amperes(150.0)
-    assert config.my_power_field == Power.from_watts(200.0)
-    assert (
-        config.my_reactive_power_field
-        == ReactivePower.from_milli_volt_amperes_reactive(250.0)
+    assert config.my_percent_field == Percentage[float].from_percent(50.0)
+    assert config.my_apparent_power_field == ApparentPower[float].from_volt_amperes(
+        150.0
     )
-    assert config.my_energy_field == Energy.from_watt_hours(200.0)
-    assert config.voltage_always_string == Voltage.from_kilovolts(250.0)
-    assert config.temp_never_string == Temperature.from_celsius(10.0)
+    assert config.my_power_field == Power[float].from_watts(200.0)
+    assert config.my_reactive_power_field == ReactivePower[
+        float
+    ].from_milli_volt_amperes_reactive(250.0)
+    assert config.my_energy_field == Energy[float].from_watt_hours(200.0)
+    assert config.voltage_always_string == Voltage[float].from_kilovolts(250.0)
+    assert config.temp_never_string == Temperature[float].from_celsius(10.0)
 
 
 def test_config_schema_dump_default_float() -> None:
     """Test that the values are correctly dumped."""
     config = Config(
-        my_percent_field=Percentage.from_percent(50.0),
-        my_apparent_power_field=ApparentPower.from_volt_amperes(150.0),
-        my_power_field=Power.from_watts(200.0),
-        my_reactive_power_field=ReactivePower.from_volt_amperes_reactive(250.0),
-        my_energy_field=Energy.from_watt_hours(200.0),
-        voltage_always_string=Voltage.from_kilovolts(250.0),
-        temp_never_string=Temperature.from_celsius(10.0),
+        my_percent_field=Percentage[float].from_percent(50.0),
+        my_apparent_power_field=ApparentPower[float].from_volt_amperes(150.0),
+        my_power_field=Power[float].from_watts(200.0),
+        my_reactive_power_field=ReactivePower[float].from_volt_amperes_reactive(250.0),
+        my_energy_field=Energy[float].from_watt_hours(200.0),
+        voltage_always_string=Voltage[float].from_kilovolts(250.0),
+        temp_never_string=Temperature[float].from_celsius(10.0),
     )
 
     dumped = config.dump(serialize_as_string_default=False)
@@ -224,13 +230,13 @@ def test_config_schema_dump_default_float() -> None:
 def test_config_schema_dump_default_string() -> None:
     """Test that the values are correctly dumped."""
     config = Config(
-        my_percent_field=Percentage.from_percent(50.0),
-        my_apparent_power_field=ApparentPower.from_volt_amperes(150.0),
-        my_power_field=Power.from_watts(200.0),
-        my_reactive_power_field=ReactivePower.from_volt_amperes_reactive(250.0),
-        my_energy_field=Energy.from_watt_hours(200.0),
-        voltage_always_string=Voltage.from_kilovolts(250.0),
-        temp_never_string=Temperature.from_celsius(10.0),
+        my_percent_field=Percentage[float].from_percent(50.0),
+        my_apparent_power_field=ApparentPower[float].from_volt_amperes(150.0),
+        my_power_field=Power[float].from_watts(200.0),
+        my_reactive_power_field=ReactivePower[float].from_volt_amperes_reactive(250.0),
+        my_energy_field=Energy[float].from_watt_hours(200.0),
+        voltage_always_string=Voltage[float].from_kilovolts(250.0),
+        temp_never_string=Temperature[float].from_celsius(10.0),
     )
 
     dumped = config.dump(serialize_as_string_default=True)
