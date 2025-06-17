@@ -5,9 +5,10 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._current import Current
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class ApparentPower(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         -3: "mVA",
@@ -37,7 +38,7 @@ class ApparentPower(
     """
 
     @classmethod
-    def from_volt_amperes(cls, value: float) -> Self:
+    def from_volt_amperes(cls, value: BaseValueT) -> Self:
         """Initialize a new apparent power quantity.
 
         Args:
@@ -49,7 +50,7 @@ class ApparentPower(
         return cls._new(value)
 
     @classmethod
-    def from_milli_volt_amperes(cls, mva: float) -> Self:
+    def from_milli_volt_amperes(cls, mva: BaseValueT) -> Self:
         """Initialize a new apparent power quantity.
 
         Args:
@@ -61,7 +62,7 @@ class ApparentPower(
         return cls._new(mva, exponent=-3)
 
     @classmethod
-    def from_kilo_volt_amperes(cls, kva: float) -> Self:
+    def from_kilo_volt_amperes(cls, kva: BaseValueT) -> Self:
         """Initialize a new apparent power quantity.
 
         Args:
@@ -73,7 +74,7 @@ class ApparentPower(
         return cls._new(kva, exponent=3)
 
     @classmethod
-    def from_mega_volt_amperes(cls, mva: float) -> Self:
+    def from_mega_volt_amperes(cls, mva: BaseValueT) -> Self:
         """Initialize a new apparent power quantity.
 
         Args:
@@ -84,7 +85,7 @@ class ApparentPower(
         """
         return cls._new(mva, exponent=6)
 
-    def as_volt_amperes(self) -> float:
+    def as_volt_amperes(self) -> BaseValueT:
         """Return the apparent power in volt-amperes (VA).
 
         Returns:
@@ -92,32 +93,32 @@ class ApparentPower(
         """
         return self._base_value
 
-    def as_milli_volt_amperes(self) -> float:
+    def as_milli_volt_amperes(self) -> BaseValueT:
         """Return the apparent power in millivolt-amperes (mVA).
 
         Returns:
             The apparent power in millivolt-amperes (mVA).
         """
-        return self._base_value * 1e3
+        return self._base_value * self._base_value.__class__(1e3)
 
-    def as_kilo_volt_amperes(self) -> float:
+    def as_kilo_volt_amperes(self) -> BaseValueT:
         """Return the apparent power in kilovolt-amperes (kVA).
 
         Returns:
             The apparent power in kilovolt-amperes (kVA).
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
-    def as_mega_volt_amperes(self) -> float:
+    def as_mega_volt_amperes(self) -> BaseValueT:
         """Return the apparent power in megavolt-amperes (MVA).
 
         Returns:
             The apparent power in megavolt-amperes (MVA).
         """
-        return self._base_value / 1e6
+        return self._base_value / self._base_value.__class__(1e6)
 
     @overload
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this power by a scalar.
 
         Args:
@@ -128,7 +129,7 @@ class ApparentPower(
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this power by a percentage.
 
         Args:
@@ -138,7 +139,7 @@ class ApparentPower(
             The scaled power.
         """
 
-    def __mul__(self, other: float | Percentage, /) -> Self:
+    def __mul__(self, other: BaseValueT | Percentage[BaseValueT], /) -> Self:
         """Return a power or energy from multiplying this power by the given value.
 
         Args:
@@ -150,8 +151,8 @@ class ApparentPower(
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float() | Percentage():
-                return super().__mul__(other)
+            case float() | Percentage() | Decimal():
+                return super().__mul__(other)  # type: ignore[operator]
             case _:
                 return NotImplemented
 
@@ -164,7 +165,7 @@ class ApparentPower(
     # And a discussion in a mypy issue here:
     # https://github.com/python/mypy/issues/4985#issuecomment-389692396
     @overload  # type: ignore[override]
-    def __truediv__(self, other: float, /) -> Self:
+    def __truediv__(self, other: BaseValueT, /) -> Self:
         """Divide this power by a scalar.
 
         Args:
@@ -175,7 +176,7 @@ class ApparentPower(
         """
 
     @overload
-    def __truediv__(self, other: Self, /) -> float:
+    def __truediv__(self, other: Self, /) -> BaseValueT:
         """Return the ratio of this power to another.
 
         Args:
@@ -186,7 +187,7 @@ class ApparentPower(
         """
 
     @overload
-    def __truediv__(self, current: Current, /) -> Voltage:
+    def __truediv__(self, current: Current[BaseValueT], /) -> Voltage[BaseValueT]:
         """Return a voltage from dividing this power by the given current.
 
         Args:
@@ -197,7 +198,7 @@ class ApparentPower(
         """
 
     @overload
-    def __truediv__(self, voltage: Voltage, /) -> Current:
+    def __truediv__(self, voltage: Voltage[BaseValueT], /) -> Current[BaseValueT]:
         """Return a current from dividing this power by the given voltage.
 
         Args:
@@ -208,8 +209,16 @@ class ApparentPower(
         """
 
     def __truediv__(
-        self, other: float | Self | Current | Voltage, /
-    ) -> Self | float | Voltage | Current:
+        self,
+        other: (
+            BaseValueT
+            | Self
+            | Current[BaseValueT]
+            | Voltage[BaseValueT]
+            | ApparentPower[BaseValueT]
+        ),
+        /,
+    ) -> Self | BaseValueT | Voltage[BaseValueT] | Current[BaseValueT]:
         """Return a current or voltage from dividing this power by the given value.
 
         Args:
@@ -222,8 +231,8 @@ class ApparentPower(
         from ._voltage import Voltage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float():
-                return super().__truediv__(other)
+            case float() | Decimal():
+                return super().__truediv__(other)  # type: ignore[operator]
             case ApparentPower():
                 return self._base_value / other._base_value
             case Current():

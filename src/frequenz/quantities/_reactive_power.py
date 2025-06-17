@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._current import Current
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class ReactivePower(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         -3: "mVAR",
@@ -38,7 +39,7 @@ class ReactivePower(
     """
 
     @classmethod
-    def from_volt_amperes_reactive(cls, value: float) -> Self:
+    def from_volt_amperes_reactive(cls, value: BaseValueT) -> Self:
         """Initialize a new reactive power quantity.
 
         Args:
@@ -50,7 +51,7 @@ class ReactivePower(
         return cls._new(value)
 
     @classmethod
-    def from_milli_volt_amperes_reactive(cls, mvars: float) -> Self:
+    def from_milli_volt_amperes_reactive(cls, mvars: BaseValueT) -> Self:
         """Initialize a new reactive power quantity.
 
         Args:
@@ -62,7 +63,7 @@ class ReactivePower(
         return cls._new(mvars, exponent=-3)
 
     @classmethod
-    def from_kilo_volt_amperes_reactive(cls, kvars: float) -> Self:
+    def from_kilo_volt_amperes_reactive(cls, kvars: BaseValueT) -> Self:
         """Initialize a new reactive power quantity.
 
         Args:
@@ -74,7 +75,7 @@ class ReactivePower(
         return cls._new(kvars, exponent=3)
 
     @classmethod
-    def from_mega_volt_amperes_reactive(cls, mvars: float) -> Self:
+    def from_mega_volt_amperes_reactive(cls, mvars: BaseValueT) -> Self:
         """Initialize a new reactive power quantity.
 
         Args:
@@ -85,7 +86,7 @@ class ReactivePower(
         """
         return cls._new(mvars, exponent=6)
 
-    def as_volt_amperes_reactive(self) -> float:
+    def as_volt_amperes_reactive(self) -> BaseValueT:
         """Return the reactive power in volt-amperes reactive (VAR).
 
         Returns:
@@ -93,32 +94,32 @@ class ReactivePower(
         """
         return self._base_value
 
-    def as_milli_volt_amperes_reactive(self) -> float:
+    def as_milli_volt_amperes_reactive(self) -> BaseValueT:
         """Return the reactive power in millivolt-amperes reactive (mVAR).
 
         Returns:
             The reactive power in millivolt-amperes reactive (mVAR).
         """
-        return self._base_value * 1e3
+        return self._base_value * self._base_value.__class__(1e3)
 
-    def as_kilo_volt_amperes_reactive(self) -> float:
+    def as_kilo_volt_amperes_reactive(self) -> BaseValueT:
         """Return the reactive power in kilovolt-amperes reactive (kVAR).
 
         Returns:
             The reactive power in kilovolt-amperes reactive (kVAR).
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
-    def as_mega_volt_amperes_reactive(self) -> float:
+    def as_mega_volt_amperes_reactive(self) -> BaseValueT:
         """Return the reactive power in megavolt-amperes reactive (MVAR).
 
         Returns:
             The reactive power in megavolt-amperes reactive (MVAR).
         """
-        return self._base_value / 1e6
+        return self._base_value / self._base_value.__class__(1e6)
 
     @overload
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this power by a scalar.
 
         Args:
@@ -129,7 +130,7 @@ class ReactivePower(
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this power by a percentage.
 
         Args:
@@ -139,7 +140,7 @@ class ReactivePower(
             The scaled power.
         """
 
-    def __mul__(self, other: float | Percentage, /) -> Self:
+    def __mul__(self, other: BaseValueT | Percentage[BaseValueT], /) -> Self:
         """Return a power or energy from multiplying this power by the given value.
 
         Args:
@@ -151,8 +152,8 @@ class ReactivePower(
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float() | Percentage():
-                return super().__mul__(other)
+            case float() | Decimal() | Percentage():
+                return super().__mul__(other)  # type: ignore[operator]
             case _:
                 return NotImplemented
 
@@ -165,7 +166,7 @@ class ReactivePower(
     # And a discussion in a mypy issue here:
     # https://github.com/python/mypy/issues/4985#issuecomment-389692396
     @overload  # type: ignore[override]
-    def __truediv__(self, other: float, /) -> Self:
+    def __truediv__(self, other: BaseValueT, /) -> Self:
         """Divide this power by a scalar.
 
         Args:
@@ -176,7 +177,7 @@ class ReactivePower(
         """
 
     @overload
-    def __truediv__(self, other: Self, /) -> float:
+    def __truediv__(self, other: Self, /) -> BaseValueT:
         """Return the ratio of this power to another.
 
         Args:
@@ -187,7 +188,7 @@ class ReactivePower(
         """
 
     @overload
-    def __truediv__(self, current: Current, /) -> Voltage:
+    def __truediv__(self, current: Current[BaseValueT], /) -> Voltage[BaseValueT]:
         """Return a voltage from dividing this power by the given current.
 
         Args:
@@ -198,7 +199,7 @@ class ReactivePower(
         """
 
     @overload
-    def __truediv__(self, voltage: Voltage, /) -> Current:
+    def __truediv__(self, voltage: Voltage[BaseValueT], /) -> Current[BaseValueT]:
         """Return a current from dividing this power by the given voltage.
 
         Args:
@@ -209,8 +210,16 @@ class ReactivePower(
         """
 
     def __truediv__(
-        self, other: float | Self | Current | Voltage, /
-    ) -> Self | float | Voltage | Current:
+        self,
+        other: (
+            BaseValueT
+            | Self
+            | Current[BaseValueT]
+            | Voltage[BaseValueT]
+            | ReactivePower[BaseValueT]
+        ),
+        /,
+    ) -> Self | BaseValueT | Voltage[BaseValueT] | Current[BaseValueT]:
         """Return a current or voltage from dividing this power by the given value.
 
         Args:
@@ -223,8 +232,8 @@ class ReactivePower(
         from ._voltage import Voltage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float():
-                return super().__truediv__(other)
+            case float() | Decimal():
+                return super().__truediv__(other)  # type: ignore[operator]
             case ReactivePower():
                 return self._base_value / other._base_value
             case Current():

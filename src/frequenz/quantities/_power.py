@@ -7,9 +7,10 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._current import Current
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class Power(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         -3: "mW",
@@ -40,7 +41,7 @@ class Power(
     """
 
     @classmethod
-    def from_watts(cls, watts: float) -> Self:
+    def from_watts(cls, watts: BaseValueT) -> Self:
         """Initialize a new power quantity.
 
         Args:
@@ -52,7 +53,7 @@ class Power(
         return cls._new(watts)
 
     @classmethod
-    def from_milliwatts(cls, milliwatts: float) -> Self:
+    def from_milliwatts(cls, milliwatts: BaseValueT) -> Self:
         """Initialize a new power quantity.
 
         Args:
@@ -64,7 +65,7 @@ class Power(
         return cls._new(milliwatts, exponent=-3)
 
     @classmethod
-    def from_kilowatts(cls, kilowatts: float) -> Self:
+    def from_kilowatts(cls, kilowatts: BaseValueT) -> Self:
         """Initialize a new power quantity.
 
         Args:
@@ -76,7 +77,7 @@ class Power(
         return cls._new(kilowatts, exponent=3)
 
     @classmethod
-    def from_megawatts(cls, megawatts: float) -> Self:
+    def from_megawatts(cls, megawatts: BaseValueT) -> Self:
         """Initialize a new power quantity.
 
         Args:
@@ -87,7 +88,7 @@ class Power(
         """
         return cls._new(megawatts, exponent=6)
 
-    def as_watts(self) -> float:
+    def as_watts(self) -> BaseValueT:
         """Return the power in watts.
 
         Returns:
@@ -95,21 +96,21 @@ class Power(
         """
         return self._base_value
 
-    def as_kilowatts(self) -> float:
+    def as_kilowatts(self) -> BaseValueT:
         """Return the power in kilowatts.
 
         Returns:
             The power in kilowatts.
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
-    def as_megawatts(self) -> float:
+    def as_megawatts(self) -> BaseValueT:
         """Return the power in megawatts.
 
         Returns:
             The power in megawatts.
         """
-        return self._base_value / 1e6
+        return self._base_value / self._base_value.__class__(1e6)
 
     # We need the ignore here because otherwise mypy will give this error:
     # > Overloaded operator methods can't have wider argument types in overrides
@@ -120,7 +121,7 @@ class Power(
     # And a discussion in a mypy issue here:
     # https://github.com/python/mypy/issues/4985#issuecomment-389692396
     @overload  # type: ignore[override]
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this power by a scalar.
 
         Args:
@@ -131,7 +132,7 @@ class Power(
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this power by a percentage.
 
         Args:
@@ -142,7 +143,7 @@ class Power(
         """
 
     @overload
-    def __mul__(self, other: timedelta, /) -> Energy:
+    def __mul__(self, other: timedelta, /) -> Energy[BaseValueT]:
         """Return an energy from multiplying this power by the given duration.
 
         Args:
@@ -152,7 +153,9 @@ class Power(
             The calculated energy.
         """
 
-    def __mul__(self, other: float | Percentage | timedelta, /) -> Self | Energy:
+    def __mul__(
+        self, other: BaseValueT | Percentage[BaseValueT] | timedelta, /
+    ) -> Self | Energy[BaseValueT]:
         """Return a power or energy from multiplying this power by the given value.
 
         Args:
@@ -165,16 +168,23 @@ class Power(
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float() | Percentage():
-                return super().__mul__(other)
+            case float() | Decimal():
+                return self._new(self._base_value * other)
+            case Percentage():
+                return self._new(
+                    self._base_value * self._base_value.__class__(other.as_fraction())
+                )
             case timedelta():
-                return Energy._new(self._base_value * other.total_seconds() / 3600.0)
+                return Energy[BaseValueT]._new(
+                    self._base_value
+                    * self._base_value.__class__(other.total_seconds() / 3600.0)
+                )
             case _:
                 return NotImplemented
 
     # See the comment for Power.__mul__ for why we need the ignore here.
     @overload  # type: ignore[override]
-    def __truediv__(self, other: float, /) -> Self:
+    def __truediv__(self, other: BaseValueT, /) -> Self:
         """Divide this power by a scalar.
 
         Args:
@@ -185,7 +195,7 @@ class Power(
         """
 
     @overload
-    def __truediv__(self, other: Self, /) -> float:
+    def __truediv__(self, other: Self, /) -> BaseValueT:
         """Return the ratio of this power to another.
 
         Args:
@@ -196,7 +206,7 @@ class Power(
         """
 
     @overload
-    def __truediv__(self, current: Current, /) -> Voltage:
+    def __truediv__(self, current: Current[BaseValueT], /) -> Voltage[BaseValueT]:
         """Return a voltage from dividing this power by the given current.
 
         Args:
@@ -207,7 +217,7 @@ class Power(
         """
 
     @overload
-    def __truediv__(self, voltage: Voltage, /) -> Current:
+    def __truediv__(self, voltage: Voltage[BaseValueT], /) -> Current[BaseValueT]:
         """Return a current from dividing this power by the given voltage.
 
         Args:
@@ -218,8 +228,8 @@ class Power(
         """
 
     def __truediv__(
-        self, other: float | Self | Current | Voltage, /
-    ) -> Self | float | Voltage | Current:
+        self, other: BaseValueT | Self | Current[BaseValueT] | Voltage[BaseValueT], /
+    ) -> Self | BaseValueT | Voltage[BaseValueT] | Current[BaseValueT]:
         """Return a current or voltage from dividing this power by the given value.
 
         Args:
@@ -232,13 +242,13 @@ class Power(
         from ._voltage import Voltage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float():
-                return super().__truediv__(other)
+            case float() | Decimal():
+                return super().__truediv__(other)  # type: ignore[operator]
             case Power():
-                return self._base_value / other._base_value
+                return self._base_value.__class__(self._base_value / other._base_value)
             case Current():
-                return Voltage._new(self._base_value / other._base_value)
+                return Voltage[BaseValueT]._new(self._base_value / other._base_value)
             case Voltage():
-                return Current._new(self._base_value / other._base_value)
+                return Current[BaseValueT]._new(self._base_value / other._base_value)
             case _:
                 return NotImplemented

@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._current import Current
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class Voltage(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={0: "V", -3: "mV", 3: "kV"},
 ):
@@ -33,7 +34,7 @@ class Voltage(
     """
 
     @classmethod
-    def from_volts(cls, volts: float) -> Self:
+    def from_volts(cls, volts: BaseValueT) -> Self:
         """Initialize a new voltage quantity.
 
         Args:
@@ -45,7 +46,7 @@ class Voltage(
         return cls._new(volts)
 
     @classmethod
-    def from_millivolts(cls, millivolts: float) -> Self:
+    def from_millivolts(cls, millivolts: BaseValueT) -> Self:
         """Initialize a new voltage quantity.
 
         Args:
@@ -57,7 +58,7 @@ class Voltage(
         return cls._new(millivolts, exponent=-3)
 
     @classmethod
-    def from_kilovolts(cls, kilovolts: float) -> Self:
+    def from_kilovolts(cls, kilovolts: BaseValueT) -> Self:
         """Initialize a new voltage quantity.
 
         Args:
@@ -68,7 +69,7 @@ class Voltage(
         """
         return cls._new(kilovolts, exponent=3)
 
-    def as_volts(self) -> float:
+    def as_volts(self) -> BaseValueT:
         """Return the voltage in volts.
 
         Returns:
@@ -76,25 +77,25 @@ class Voltage(
         """
         return self._base_value
 
-    def as_millivolts(self) -> float:
+    def as_millivolts(self) -> BaseValueT:
         """Return the voltage in millivolts.
 
         Returns:
             The voltage in millivolts.
         """
-        return self._base_value * 1e3
+        return self._base_value * self._base_value.__class__(1e3)
 
-    def as_kilovolts(self) -> float:
+    def as_kilovolts(self) -> BaseValueT:
         """Return the voltage in kilovolts.
 
         Returns:
             The voltage in kilovolts.
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
     # See comment for Power.__mul__ for why we need the ignore here.
     @overload  # type: ignore[override]
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this voltage by a scalar.
 
         Args:
@@ -105,7 +106,7 @@ class Voltage(
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this voltage by a percentage.
 
         Args:
@@ -116,7 +117,7 @@ class Voltage(
         """
 
     @overload
-    def __mul__(self, other: Current, /) -> Power:
+    def __mul__(self, other: Current[BaseValueT], /) -> Power[BaseValueT]:
         """Multiply the voltage by the current to get the power.
 
         Args:
@@ -126,7 +127,9 @@ class Voltage(
             The calculated power.
         """
 
-    def __mul__(self, other: float | Percentage | Current, /) -> Self | Power:
+    def __mul__(
+        self, other: BaseValueT | Percentage[BaseValueT] | Current[BaseValueT], /
+    ) -> Self | Power[BaseValueT]:
         """Return a voltage or power from multiplying this voltage by the given value.
 
         Args:
@@ -140,9 +143,13 @@ class Voltage(
         from ._power import Power  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float() | Percentage():
-                return super().__mul__(other)
+            case float() | Decimal():
+                return self._new(self._base_value * other)
+            case Percentage():
+                return self._new(
+                    self._base_value * self._base_value.__class__(other.as_fraction())
+                )
             case Current():
-                return Power._new(self._base_value * other._base_value)
+                return Power[BaseValueT]._new(self._base_value * other._base_value)
             case _:
                 return NotImplemented

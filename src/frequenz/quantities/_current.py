@@ -6,9 +6,10 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._percentage import Percentage
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class Current(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         -3: "mA",
@@ -36,7 +37,7 @@ class Current(
     """
 
     @classmethod
-    def from_amperes(cls, amperes: float) -> Self:
+    def from_amperes(cls, amperes: BaseValueT) -> Self:
         """Initialize a new current quantity.
 
         Args:
@@ -48,7 +49,7 @@ class Current(
         return cls._new(amperes)
 
     @classmethod
-    def from_milliamperes(cls, milliamperes: float) -> Self:
+    def from_milliamperes(cls, milliamperes: BaseValueT) -> Self:
         """Initialize a new current quantity.
 
         Args:
@@ -59,7 +60,7 @@ class Current(
         """
         return cls._new(milliamperes, exponent=-3)
 
-    def as_amperes(self) -> float:
+    def as_amperes(self) -> BaseValueT:
         """Return the current in amperes.
 
         Returns:
@@ -67,17 +68,17 @@ class Current(
         """
         return self._base_value
 
-    def as_milliamperes(self) -> float:
+    def as_milliamperes(self) -> BaseValueT:
         """Return the current in milliamperes.
 
         Returns:
             The current in milliamperes.
         """
-        return self._base_value * 1e3
+        return self._base_value * self._base_value.__class__(1e3)
 
     # See comment for Power.__mul__ for why we need the ignore here.
     @overload  # type: ignore[override]
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this current by a scalar.
 
         Args:
@@ -88,7 +89,7 @@ class Current(
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this current by a percentage.
 
         Args:
@@ -99,7 +100,7 @@ class Current(
         """
 
     @overload
-    def __mul__(self, other: Voltage, /) -> Power:
+    def __mul__(self, other: Voltage[BaseValueT], /) -> Power[BaseValueT]:
         """Multiply the current by a voltage to get a power.
 
         Args:
@@ -109,7 +110,9 @@ class Current(
             The calculated power.
         """
 
-    def __mul__(self, other: float | Percentage | Voltage, /) -> Self | Power:
+    def __mul__(
+        self, other: BaseValueT | Percentage[BaseValueT] | Voltage[BaseValueT], /
+    ) -> Self | Power[BaseValueT]:
         """Return a current or power from multiplying this current by the given value.
 
         Args:
@@ -123,8 +126,8 @@ class Current(
         from ._voltage import Voltage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float() | Percentage():
-                return super().__mul__(other)
+            case float() | Decimal() | Percentage():
+                return super().__mul__(other)  # type: ignore[operator]
             case Voltage():
                 return Power._new(self._base_value * other._base_value)
             case _:
