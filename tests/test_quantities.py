@@ -94,7 +94,7 @@ assert len(_QUANTITY_CTORS) >= _SANITFY_NUM_CLASSES
 
 
 @pytest.mark.parametrize("quantity_ctor", _QUANTITY_CTORS)
-def test_base_value_from_ctor_is_float(quantity_ctor: _CtorType) -> None:
+def test_base_value_from_ctor_is_float(quantity_ctor: _CtorType[float]) -> None:
     """Test that the base value always is a float."""
     quantity = quantity_ctor(1)
     assert isinstance(quantity.base_value, float)
@@ -104,7 +104,7 @@ def test_base_value_from_ctor_is_float(quantity_ctor: _CtorType) -> None:
     "quantity_type, unit", zip(_QUANTITY_SUBCLASSES, _QUANTITY_BASE_UNIT_STRINGS)
 )
 def test_base_value_from_string_is_float(
-    quantity_type: type[Quantity], unit: str
+    quantity_type: type[Quantity[float]], unit: str
 ) -> None:
     """Test that the base value always is a float."""
     quantity = quantity_type.from_string(f"1 {unit}")
@@ -161,17 +161,19 @@ def test_string_representation() -> None:
     assert f"{Fz1(-20)}" == "-20 Hz"
     assert f"{Fz1(-20000)}" == "-20 kHz"
 
-    assert f"{Power.from_watts(0.000124445):.0}" == "0 W"
-    assert f"{Energy.from_watt_hours(0.124445):.0}" == "0 Wh"
-    assert f"{ReactivePower.from_volt_amperes_reactive(0.000124445):.0}" == "0 VAR"
-    assert f"{ApparentPower.from_volt_amperes(0.000124445):.0}" == "0 VA"
-    assert f"{Power.from_watts(-0.0):.0}" == "-0 W"
-    assert f"{Power.from_watts(0.0):.0}" == "0 W"
-    assert f"{ReactivePower.from_volt_amperes_reactive(-0.0):.0}" == "-0 VAR"
-    assert f"{ReactivePower.from_volt_amperes_reactive(0.0):.0}" == "0 VAR"
-    assert f"{ApparentPower.from_volt_amperes(-0.0):.0}" == "-0 VA"
-    assert f"{ApparentPower.from_volt_amperes(0.0):.0}" == "0 VA"
-    assert f"{Voltage.from_volts(999.9999850988388)}" == "1 kV"
+    assert f"{Power[float].from_watts(0.000124445):.0}" == "0 W"
+    assert f"{Energy[float].from_watt_hours(0.124445):.0}" == "0 Wh"
+    assert (
+        f"{ReactivePower[float].from_volt_amperes_reactive(0.000124445):.0}" == "0 VAR"
+    )
+    assert f"{ApparentPower[float].from_volt_amperes(0.000124445):.0}" == "0 VA"
+    assert f"{Power[float].from_watts(-0.0):.0}" == "-0 W"
+    assert f"{Power[float].from_watts(0.0):.0}" == "0 W"
+    assert f"{ReactivePower[float].from_volt_amperes_reactive(-0.0):.0}" == "-0 VAR"
+    assert f"{ReactivePower[float].from_volt_amperes_reactive(0.0):.0}" == "0 VAR"
+    assert f"{ApparentPower[float].from_volt_amperes(-0.0):.0}" == "-0 VA"
+    assert f"{ApparentPower[float].from_volt_amperes(0.0):.0}" == "0 VA"
+    assert f"{Voltage[float].from_volts(999.9999850988388)}" == "1 kV"
 
 
 def test_isclose() -> None:
@@ -623,10 +625,10 @@ def test_abs() -> None:
     percent=st.floats(allow_infinity=False, allow_nan=False, allow_subnormal=False),
 )
 def test_quantity_multiplied_with_precentage(
-    quantity_ctor: type[Quantity], quantity_value: float, percent: float
+    quantity_ctor: type[Quantity[float]], quantity_value: float, percent: float
 ) -> None:
     """Test the multiplication of all quantities with percentage."""
-    percentage = Percentage.from_percent(percent)
+    percentage = Percentage[float].from_percent(percent)
     quantity = quantity_ctor(quantity_value)
     expected_value = quantity.base_value * (percent / 100.0)
     print(f"{quantity=}, {percentage=}, {expected_value=}")
@@ -656,7 +658,7 @@ def test_quantity_multiplied_with_precentage(
     scalar=st.floats(allow_infinity=False, allow_nan=False, allow_subnormal=False),
 )
 def test_quantity_multiplied_with_float(
-    quantity_ctor: type[Quantity], quantity_value: float, scalar: float
+    quantity_ctor: type[Quantity[float]], quantity_value: float, scalar: float
 ) -> None:
     """Test the multiplication of all quantities with a float."""
     quantity = quantity_ctor(quantity_value)
@@ -674,10 +676,10 @@ def test_quantity_multiplied_with_float(
 
 def test_invalid_multiplications() -> None:
     """Test the multiplication of quantities with invalid quantities."""
-    power = Power.from_watts(1000.0)
-    voltage = Voltage.from_volts(230.0)
-    current = Current.from_amperes(2)
-    energy = Energy.from_kilowatt_hours(12)
+    power = Power[float].from_watts(1000.0)
+    voltage = Voltage[float].from_volts(230.0)
+    current = Current[float].from_amperes(2)
+    energy = Energy[float].from_kilowatt_hours(12)
 
     for quantity in [power, voltage, current, energy]:
         with pytest.raises(TypeError):
@@ -720,7 +722,7 @@ def test_invalid_multiplications() -> None:
     scalar=st.floats(allow_infinity=False, allow_nan=False, allow_subnormal=False),
 )
 def test_quantity_divided_by_float(
-    quantity_ctor: type[Quantity], quantity_value: float, scalar: float
+    quantity_ctor: type[Quantity[float]], quantity_value: float, scalar: float
 ) -> None:
     """Test the division of all quantities by a float."""
     hypothesis.assume(scalar != 0.0)
@@ -755,12 +757,12 @@ def test_quantity_divided_by_float(
     ),
 )
 def test_quantity_divided_by_self(
-    quantity_ctor: type[Quantity], quantity_value: float, divisor_value: float
+    quantity_ctor: type[Quantity[float]], quantity_value: float, divisor_value: float
 ) -> None:
     """Test the division of all quantities by a float."""
     hypothesis.assume(divisor_value != 0.0)
     # We need to have float here because quantity /= divisor will return a float
-    quantity: Quantity | float = quantity_ctor(quantity_value)
+    quantity: Quantity[float] | float = quantity_ctor(quantity_value)
     divisor = quantity_ctor(divisor_value)
     assert isinstance(quantity, Quantity)
     expected_value = quantity.base_value / divisor.base_value
@@ -780,20 +782,20 @@ def test_quantity_divided_by_self(
 @pytest.mark.parametrize(
     "divisor",
     [
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Power.from_watts(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
-        Voltage.from_volts(230.0),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Power[float].from_watts(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
+        Voltage[float].from_volts(230.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_current_divisions(divisor: Quantity) -> None:
+def test_invalid_current_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of current with invalid quantities."""
-    current = Current.from_amperes(2)
+    current = Current[float].from_amperes(2)
 
     with pytest.raises(TypeError):
         _ = current / divisor  # type: ignore
@@ -804,19 +806,19 @@ def test_invalid_current_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Frequency.from_hertz(50),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
-        Voltage.from_volts(230.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
+        Current[float].from_amperes(2),
+        Frequency[float].from_hertz(50),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
+        Voltage[float].from_volts(230.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_energy_divisions(divisor: Quantity) -> None:
+def test_invalid_energy_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of energy with invalid quantities."""
-    energy = Energy.from_kilowatt_hours(500.0)
+    energy = Energy[float].from_kilowatt_hours(500.0)
 
     with pytest.raises(TypeError):
         _ = energy / divisor  # type: ignore
@@ -827,20 +829,20 @@ def test_invalid_energy_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Energy.from_kilowatt_hours(500.0),
-        Power.from_watts(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
-        Voltage.from_volts(230.0),
+        Current[float].from_amperes(2),
+        Energy[float].from_kilowatt_hours(500.0),
+        Power[float].from_watts(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
+        Voltage[float].from_volts(230.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_frequency_divisions(divisor: Quantity) -> None:
+def test_invalid_frequency_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of frequency with invalid quantities."""
-    frequency = Frequency.from_hertz(50)
+    frequency = Frequency[float].from_hertz(50)
 
     with pytest.raises(TypeError):
         _ = frequency / divisor  # type: ignore
@@ -851,21 +853,21 @@ def test_invalid_frequency_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Power.from_watts(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
-        Voltage.from_volts(230.0),
+        Current[float].from_amperes(2),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Power[float].from_watts(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
+        Voltage[float].from_volts(230.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_percentage_divisions(divisor: Quantity) -> None:
+def test_invalid_percentage_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of percentage with invalid quantities."""
-    percentage = Percentage.from_percent(50.0)
+    percentage = Percentage[float].from_percent(50.0)
 
     with pytest.raises(TypeError):
         _ = percentage / divisor  # type: ignore
@@ -876,18 +878,18 @@ def test_invalid_percentage_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_power_divisions(divisor: Quantity) -> None:
+def test_invalid_power_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of power with invalid quantities."""
-    power = Power.from_watts(1000.0)
+    power = Power[float].from_watts(1000.0)
 
     with pytest.raises(TypeError):
         _ = power / divisor  # type: ignore
@@ -898,18 +900,18 @@ def test_invalid_power_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Power.from_watts(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        Temperature.from_celsius(30),
-        Voltage.from_volts(230.0),
+        Current[float].from_amperes(2),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Power[float].from_watts(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        Temperature[float].from_celsius(30),
+        Voltage[float].from_volts(230.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_quantity_divisions(divisor: Quantity) -> None:
+def test_invalid_quantity_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of quantity with invalid quantities."""
     quantity = Quantity(30.0)
 
@@ -922,18 +924,18 @@ def test_invalid_quantity_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Power.from_watts(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        Quantity(30.0),
-        Voltage.from_volts(230.0),
+        Current[float].from_amperes(2),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Power[float].from_watts(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        Quantity[float](30.0),
+        Voltage[float].from_volts(230.0),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_temperature_divisions(divisor: Quantity) -> None:
+def test_invalid_temperature_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of temperature with invalid quantities."""
     temperature = Temperature.from_celsius(30)
 
@@ -946,20 +948,20 @@ def test_invalid_temperature_divisions(divisor: Quantity) -> None:
 @pytest.mark.parametrize(
     "divisor",
     [
-        Current.from_amperes(2),
-        Energy.from_kilowatt_hours(500.0),
-        Frequency.from_hertz(50),
-        Power.from_watts(1000.0),
-        ReactivePower.from_volt_amperes_reactive(1000.0),
-        ApparentPower.from_volt_amperes(1000.0),
-        Quantity(30.0),
-        Temperature.from_celsius(30),
+        Current[float].from_amperes(2),
+        Energy[float].from_kilowatt_hours(500.0),
+        Frequency[float].from_hertz(50),
+        Power[float].from_watts(1000.0),
+        ReactivePower[float].from_volt_amperes_reactive(1000.0),
+        ApparentPower[float].from_volt_amperes(1000.0),
+        Quantity[float](30.0),
+        Temperature[float].from_celsius(30),
     ],
     ids=lambda q: q.__class__.__name__,
 )
-def test_invalid_voltage_divisions(divisor: Quantity) -> None:
+def test_invalid_voltage_divisions(divisor: Quantity[float]) -> None:
     """Test the divisions of voltage with invalid quantities."""
-    voltage = Voltage.from_volts(230.0)
+    voltage = Voltage[float].from_volts(230.0)
 
     with pytest.raises(TypeError):
         _ = voltage / divisor  # type: ignore
@@ -981,7 +983,7 @@ def test_invalid_voltage_divisions(divisor: Quantity) -> None:
 @hypothesis.seed(42)  # Seed that triggers a lot of problematic edge cases
 @hypothesis.given(value=st.floats(min_value=-1.0, max_value=1.0))
 def test_to_and_from_string(
-    quantity_type: type[Quantity], exponent: int, value: float
+    quantity_type: type[Quantity[float]], exponent: int, value: float
 ) -> None:
     """Test string parsing and formatting.
 
