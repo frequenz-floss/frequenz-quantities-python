@@ -62,7 +62,7 @@ dev-mkdocs = [
   "frequenz-repo-config[lib] == 0.13.5",
 ]
 dev-mypy = [
-  "mypy == 1.16.1",
+  "mypy == 1.17.1",
   "types-Markdown == 3.8.0.20250415",
   # For checking the noxfile, docs/ script, and tests
   "frequenz-quantities[dev-mkdocs,dev-noxfile,dev-pytest,marshmallow]",
@@ -80,7 +80,7 @@ dev-pytest = [
   "pytest-mock == 3.14.1",
   "pytest-asyncio == 1.0.0",
   "async-solipsism == 0.7",
-  "hypothesis == 6.135.20",
+  "hypothesis == 6.136.6",
   "frequenz-quantities[marshmallow]",
 ]
 
