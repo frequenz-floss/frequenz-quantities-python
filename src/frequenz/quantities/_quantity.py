@@ -7,19 +7,22 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, NoReturn, Self, overload
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any, Generic, NoReturn, Self, TypeVar, overload
 
 if TYPE_CHECKING:
     from ._percentage import Percentage
 
+BaseValueT = TypeVar("BaseValueT", float, Decimal)
 
-class Quantity:
+
+class Quantity(Generic[BaseValueT]):
     """A quantity with a unit.
 
     Quantities try to behave like float and are also immutable.
     """
 
-    _base_value: float
+    _base_value: BaseValueT
     """The value of this quantity in the base unit."""
 
     _exponent_unit_map: dict[int, str] | None = None
@@ -29,17 +32,19 @@ class Quantity:
     class.  Sub-classes must define this.
     """
 
-    def __init__(self, value: float, exponent: int = 0) -> None:
+    def __init__(self, value: BaseValueT, exponent: int = 0) -> None:
         """Initialize a new quantity.
 
         Args:
             value: The value of this quantity in a given exponent of the base unit.
             exponent: The exponent of the base unit the given value is in.
         """
-        self._base_value = value * 10.0**exponent
+        if isinstance(value, int):
+            value = float(value)
+        self._base_value = value * value.__class__(10.0) ** exponent
 
     @classmethod
-    def _new(cls, value: float, *, exponent: int = 0) -> Self:
+    def _new(cls, value: BaseValueT, *, exponent: int = 0) -> Self:
         """Instantiate a new quantity subclass instance.
 
         Args:
@@ -50,7 +55,9 @@ class Quantity:
             A new quantity subclass instance.
         """
         self = cls.__new__(cls)
-        self._base_value = value * 10.0**exponent
+        if isinstance(value, int):
+            value = float(value)
+        self._base_value = value * value.__class__(10.0) ** exponent
         return self
 
     def __init_subclass__(cls, exponent_unit_map: dict[int, str]) -> None:
@@ -68,30 +75,6 @@ class Quantity:
             raise ValueError("Expected a base unit for the type (for exponent 0)")
         cls._exponent_unit_map = exponent_unit_map
         super().__init_subclass__()
-
-    _zero_cache: dict[type, Quantity] = {}
-    """Cache for zero singletons.
-
-    This is a workaround for mypy getting confused when using @functools.cache and
-    @classmethod combined with returning Self. It believes the resulting type of this
-    method is Self and complains that members of the actual class don't exist in Self,
-    so we need to implement the cache ourselves.
-    """
-
-    @classmethod
-    def zero(cls) -> Self:
-        """Return a quantity with value 0.0.
-
-        Returns:
-            A quantity with value 0.0.
-        """
-        _zero = cls._zero_cache.get(cls, None)
-        if _zero is None:
-            _zero = cls.__new__(cls)
-            _zero._base_value = 0.0
-            cls._zero_cache[cls] = _zero
-        assert isinstance(_zero, cls)
-        return _zero
 
     @classmethod
     def from_string(cls, string: str) -> Self:
@@ -130,7 +113,7 @@ class Quantity:
         raise ValueError(f"Unknown unit {split_string[1]}")
 
     @property
-    def base_value(self) -> float:
+    def base_value(self) -> BaseValueT:
         """Return the value of this quantity in the base unit.
 
         Returns:
@@ -147,7 +130,7 @@ class Quantity:
         Returns:
             The rounded quantity.
         """
-        return self._new(round(self._base_value, ndigits))
+        return self._new(self._base_value.__class__(round(self._base_value, ndigits)))
 
     def __pos__(self) -> Self:
         """Return this quantity.
@@ -284,7 +267,7 @@ class Quantity:
             return f"{self._base_value} {self._exponent_unit_map[0]}"
 
         if abs_value := abs(self._base_value):
-            precision_pow = 10 ** (precision)
+            precision_pow = self._base_value.__class__(10) ** (precision)
             # Prevent numbers like 999.999999 being rendered as 1000 V
             # instead of 1 kV.
             # This could happen because the str formatting function does
@@ -309,7 +292,8 @@ class Quantity:
         else:
             unit = self._exponent_unit_map[unit_place]
 
-        value_str = f"{self._base_value / 10 ** unit_place:.{precision}f}"
+        value = self._base_value / self._base_value.__class__(10) ** unit_place
+        value_str = f"{value:.{precision}f}"
 
         if value_str in ("-0", "0"):
             stripped = value_str
@@ -352,7 +336,7 @@ class Quantity:
         return difference
 
     @overload
-    def __mul__(self, scalar: float, /) -> Self:
+    def __mul__(self, scalar: BaseValueT, /) -> Self:
         """Scale this quantity by a scalar.
 
         Args:
@@ -363,7 +347,7 @@ class Quantity:
         """
 
     @overload
-    def __mul__(self, percent: Percentage, /) -> Self:
+    def __mul__(self, percent: Percentage[BaseValueT], /) -> Self:
         """Scale this quantity by a percentage.
 
         Args:
@@ -373,7 +357,7 @@ class Quantity:
             The scaled quantity.
         """
 
-    def __mul__(self, value: float | Percentage, /) -> Self:
+    def __mul__(self, value: BaseValueT | Percentage[BaseValueT], /) -> Self:
         """Scale this quantity by a scalar or percentage.
 
         Args:
@@ -385,15 +369,17 @@ class Quantity:
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match value:
-            case float():
+            case float() | Decimal():
                 return type(self)._new(self._base_value * value)
             case Percentage():
-                return type(self)._new(self._base_value * value.as_fraction())
+                return type(self)._new(
+                    self._base_value * self._base_value.__class__(value.as_fraction())
+                )
             case _:
                 return NotImplemented
 
     @overload
-    def __truediv__(self, other: float, /) -> Self:
+    def __truediv__(self, other: BaseValueT, /) -> Self:
         """Divide this quantity by a scalar.
 
         Args:
@@ -404,7 +390,7 @@ class Quantity:
         """
 
     @overload
-    def __truediv__(self, other: Self, /) -> float:
+    def __truediv__(self, other: Self, /) -> BaseValueT:
         """Return the ratio of this quantity to another.
 
         Args:
@@ -414,7 +400,7 @@ class Quantity:
             The ratio of this quantity to another.
         """
 
-    def __truediv__(self, value: float | Self, /) -> Self | float:
+    def __truediv__(self, value: BaseValueT | Self, /) -> Self | BaseValueT:
         """Divide this quantity by a scalar or another quantity.
 
         Args:
@@ -424,10 +410,10 @@ class Quantity:
             The divided quantity or the ratio of this quantity to another.
         """
         match value:
-            case float():
+            case float() | Decimal():
                 return type(self)._new(self._base_value / value)
             case Quantity() if type(value) is type(self):
-                return self._base_value / value._base_value
+                return self._base_value.__class__(self._base_value / value._base_value)
             case _:
                 return NotImplemented
 
@@ -516,9 +502,7 @@ class Quantity:
         Returns:
             The absolute value of this quantity.
         """
-        absolute = type(self).__new__(type(self))
-        absolute._base_value = abs(self._base_value)
-        return absolute
+        return self._new(self._base_value.__class__(abs(self._base_value)))
 
 
 class NoDefaultConstructible(type):

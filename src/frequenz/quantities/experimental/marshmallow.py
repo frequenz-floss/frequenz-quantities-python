@@ -14,7 +14,7 @@ Danger:
     even in minor or patch releases.
 """
 
-from typing import Any, Type
+from typing import Any
 
 from marshmallow import Schema, ValidationError, fields
 
@@ -54,11 +54,11 @@ class _QuantityField(fields.Field):
     mapping and are used for the TYPE_MAPPING in the `QuantitySchema`.
     """
 
-    field_type: Type[Quantity] | None = None
+    field_type: type[Quantity[float]] | None = None
     """The specific Quantity subclass."""
 
     def _serialize(
-        self, value: Quantity, attr: str | None, obj: Any, **kwargs: Any
+        self, value: Quantity[float], attr: str | None, obj: Any, **kwargs: Any
     ) -> Any:
         """Serialize the Quantity object based on per-field configuration."""
         if self.field_type is None or not issubclass(self.field_type, Quantity):
@@ -85,7 +85,7 @@ class _QuantityField(fields.Field):
 
     def _deserialize(
         self, value: Any, attr: str | None, data: Any, **kwargs: Any
-    ) -> Quantity:
+    ) -> Quantity[float]:
         """Deserialize the Quantity object from float or string."""
         if self.field_type is None or not issubclass(self.field_type, Quantity):
             raise TypeError(
@@ -177,16 +177,16 @@ class VoltageField(_QuantityField):
     field_type = Voltage
 
 
-QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[fields.Field]] = {
-    ApparentPower: ApparentPowerField,
-    Current: CurrentField,
-    Energy: EnergyField,
-    Frequency: FrequencyField,
-    Percentage: PercentageField,
-    Power: PowerField,
-    ReactivePower: ReactivePowerField,
-    Temperature: TemperatureField,
-    Voltage: VoltageField,
+QUANTITY_FIELD_CLASSES: dict[type[Quantity[float]], type[fields.Field]] = {
+    ApparentPower[float]: ApparentPowerField,
+    Current[float]: CurrentField,
+    Energy[float]: EnergyField,
+    Frequency[float]: FrequencyField,
+    Percentage[float]: PercentageField,
+    Power[float]: PowerField,
+    ReactivePower[float]: ReactivePowerField,
+    Temperature[float]: TemperatureField,
+    Voltage[float]: VoltageField,
 }
 """Mapping of Quantity subclasses to their corresponding QuantityField subclasses.
 
@@ -254,7 +254,9 @@ class QuantitySchema(Schema):
     ```
     """
 
-    TYPE_MAPPING: dict[type[Quantity], type[fields.Field]] = QUANTITY_FIELD_CLASSES
+    TYPE_MAPPING: dict[type[Quantity[float]], type[fields.Field]] = (
+        QUANTITY_FIELD_CLASSES
+    )
 
     def __init__(
         self, *args: Any, serialize_as_string_default: bool = False, **kwargs: Any

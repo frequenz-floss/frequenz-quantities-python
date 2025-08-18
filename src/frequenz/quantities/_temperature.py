@@ -6,11 +6,11 @@
 
 from typing import Self
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 
 class Temperature(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         0: "°C",
@@ -19,7 +19,7 @@ class Temperature(
     """A temperature quantity (in degrees Celsius)."""
 
     @classmethod
-    def from_celsius(cls, value: float) -> Self:
+    def from_celsius(cls, value: BaseValueT) -> Self:
         """Initialize a new temperature quantity.
 
         Args:
@@ -30,7 +30,7 @@ class Temperature(
         """
         return cls._new(value)
 
-    def as_celsius(self) -> float:
+    def as_celsius(self) -> BaseValueT:
         """Return the temperature in degrees Celsius.
 
         Returns:

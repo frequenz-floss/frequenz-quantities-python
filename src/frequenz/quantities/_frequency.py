@@ -7,11 +7,11 @@
 from datetime import timedelta
 from typing import Self
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 
 class Frequency(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={0: "Hz", 3: "kHz", 6: "MHz", 9: "GHz"},
 ):
@@ -27,7 +27,7 @@ class Frequency(
     """
 
     @classmethod
-    def from_hertz(cls, hertz: float) -> Self:
+    def from_hertz(cls, hertz: BaseValueT) -> Self:
         """Initialize a new frequency quantity.
 
         Args:
@@ -39,7 +39,7 @@ class Frequency(
         return cls._new(hertz)
 
     @classmethod
-    def from_kilohertz(cls, kilohertz: float) -> Self:
+    def from_kilohertz(cls, kilohertz: BaseValueT) -> Self:
         """Initialize a new frequency quantity.
 
         Args:
@@ -51,7 +51,7 @@ class Frequency(
         return cls._new(kilohertz, exponent=3)
 
     @classmethod
-    def from_megahertz(cls, megahertz: float) -> Self:
+    def from_megahertz(cls, megahertz: BaseValueT) -> Self:
         """Initialize a new frequency quantity.
 
         Args:
@@ -63,7 +63,7 @@ class Frequency(
         return cls._new(megahertz, exponent=6)
 
     @classmethod
-    def from_gigahertz(cls, gigahertz: float) -> Self:
+    def from_gigahertz(cls, gigahertz: BaseValueT) -> Self:
         """Initialize a new frequency quantity.
 
         Args:
@@ -74,7 +74,7 @@ class Frequency(
         """
         return cls._new(gigahertz, exponent=9)
 
-    def as_hertz(self) -> float:
+    def as_hertz(self) -> BaseValueT:
         """Return the frequency in hertz.
 
         Returns:
@@ -82,29 +82,29 @@ class Frequency(
         """
         return self._base_value
 
-    def as_kilohertz(self) -> float:
+    def as_kilohertz(self) -> BaseValueT:
         """Return the frequency in kilohertz.
 
         Returns:
             The frequency in kilohertz.
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
-    def as_megahertz(self) -> float:
+    def as_megahertz(self) -> BaseValueT:
         """Return the frequency in megahertz.
 
         Returns:
             The frequency in megahertz.
         """
-        return self._base_value / 1e6
+        return self._base_value / self._base_value.__class__(1e6)
 
-    def as_gigahertz(self) -> float:
+    def as_gigahertz(self) -> BaseValueT:
         """Return the frequency in gigahertz.
 
         Returns:
             The frequency in gigahertz.
         """
-        return self._base_value / 1e9
+        return self._base_value / self._base_value.__class__(1e9)
 
     def period(self) -> timedelta:
         """Return the period of the frequency.
@@ -112,4 +112,4 @@ class Frequency(
         Returns:
             The period of the frequency.
         """
-        return timedelta(seconds=1.0 / self._base_value)
+        return timedelta(seconds=1.0 / float(self._base_value))

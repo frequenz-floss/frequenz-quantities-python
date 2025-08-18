@@ -7,9 +7,10 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from decimal import Decimal
 from typing import TYPE_CHECKING, Self, overload
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 if TYPE_CHECKING:
     from ._percentage import Percentage
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class Energy(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={
         0: "Wh",
@@ -37,7 +38,7 @@ class Energy(
     """
 
     @classmethod
-    def from_watt_hours(cls, watt_hours: float) -> Self:
+    def from_watt_hours(cls, watt_hours: BaseValueT) -> Self:
         """Initialize a new energy quantity.
 
         Args:
@@ -49,7 +50,7 @@ class Energy(
         return cls._new(watt_hours)
 
     @classmethod
-    def from_kilowatt_hours(cls, kilowatt_hours: float) -> Self:
+    def from_kilowatt_hours(cls, kilowatt_hours: BaseValueT) -> Self:
         """Initialize a new energy quantity.
 
         Args:
@@ -61,7 +62,7 @@ class Energy(
         return cls._new(kilowatt_hours, exponent=3)
 
     @classmethod
-    def from_megawatt_hours(cls, megawatt_hours: float) -> Self:
+    def from_megawatt_hours(cls, megawatt_hours: BaseValueT) -> Self:
         """Initialize a new energy quantity.
 
         Args:
@@ -72,7 +73,7 @@ class Energy(
         """
         return cls._new(megawatt_hours, exponent=6)
 
-    def as_watt_hours(self) -> float:
+    def as_watt_hours(self) -> BaseValueT:
         """Return the energy in watt hours.
 
         Returns:
@@ -80,23 +81,23 @@ class Energy(
         """
         return self._base_value
 
-    def as_kilowatt_hours(self) -> float:
+    def as_kilowatt_hours(self) -> BaseValueT:
         """Return the energy in kilowatt hours.
 
         Returns:
             The energy in kilowatt hours.
         """
-        return self._base_value / 1e3
+        return self._base_value / self._base_value.__class__(1e3)
 
-    def as_megawatt_hours(self) -> float:
+    def as_megawatt_hours(self) -> BaseValueT:
         """Return the energy in megawatt hours.
 
         Returns:
             The energy in megawatt hours.
         """
-        return self._base_value / 1e6
+        return self._base_value / self._base_value.__class__(1e6)
 
-    def __mul__(self, other: float | Percentage) -> Self:
+    def __mul__(self, other: BaseValueT | Percentage[BaseValueT]) -> Self:
         """Scale this energy by a percentage.
 
         Args:
@@ -108,7 +109,7 @@ class Energy(
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float():
+            case float() | Decimal():
                 return self._new(self._base_value * other)
             case Percentage():
                 return self._new(self._base_value * other.as_fraction())
@@ -117,7 +118,7 @@ class Energy(
 
     # See the comment for Power.__mul__ for why we need the ignore here.
     @overload  # type: ignore[override]
-    def __truediv__(self, other: float, /) -> Self:
+    def __truediv__(self, other: BaseValueT, /) -> Self:
         """Divide this energy by a scalar.
 
         Args:
@@ -128,7 +129,7 @@ class Energy(
         """
 
     @overload
-    def __truediv__(self, other: Self, /) -> float:
+    def __truediv__(self, other: Self, /) -> BaseValueT:
         """Return the ratio of this energy to another.
 
         Args:
@@ -139,7 +140,7 @@ class Energy(
         """
 
     @overload
-    def __truediv__(self, duration: timedelta, /) -> Power:
+    def __truediv__(self, duration: timedelta, /) -> Power[BaseValueT]:
         """Return a power from dividing this energy by the given duration.
 
         Args:
@@ -150,7 +151,7 @@ class Energy(
         """
 
     @overload
-    def __truediv__(self, power: Power, /) -> timedelta:
+    def __truediv__(self, power: Power[BaseValueT], /) -> timedelta:
         """Return a duration from dividing this energy by the given power.
 
         Args:
@@ -161,8 +162,8 @@ class Energy(
         """
 
     def __truediv__(
-        self, other: float | Self | timedelta | Power, /
-    ) -> Self | float | Power | timedelta:
+        self, other: BaseValueT | Energy[BaseValueT] | timedelta | Power[BaseValueT], /
+    ) -> Self | BaseValueT | Power[BaseValueT] | timedelta:
         """Return a power or duration from dividing this energy by the given value.
 
         Args:
@@ -174,15 +175,18 @@ class Energy(
         from ._power import Power  # pylint: disable=import-outside-toplevel
 
         match other:
-            case float():
-                return super().__truediv__(other)
+            case float() | Decimal():
+                return super().__truediv__(other)  # type: ignore[operator]
             case Energy():
                 return self._base_value / other._base_value
             case timedelta():
-                return Power._new(self._base_value / (other.total_seconds() / 3600.0))
+                return Power._new(
+                    self._base_value
+                    / self._base_value.__class__(other.total_seconds() / 3600.0)
+                )
             case Power():
                 return timedelta(
-                    seconds=(self._base_value / other._base_value) * 3600.0
+                    seconds=float(self._base_value / other._base_value) * 3600.0
                 )
             case _:
                 return NotImplemented

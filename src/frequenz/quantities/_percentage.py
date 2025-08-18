@@ -6,11 +6,11 @@
 
 from typing import Self
 
-from ._quantity import NoDefaultConstructible, Quantity
+from ._quantity import BaseValueT, NoDefaultConstructible, Quantity
 
 
 class Percentage(
-    Quantity,
+    Quantity[BaseValueT],
     metaclass=NoDefaultConstructible,
     exponent_unit_map={0: "%"},
 ):
@@ -26,7 +26,7 @@ class Percentage(
     """
 
     @classmethod
-    def from_percent(cls, percent: float) -> Self:
+    def from_percent(cls, percent: BaseValueT) -> Self:
         """Initialize a new percentage quantity from a percent value.
 
         Args:
@@ -38,7 +38,7 @@ class Percentage(
         return cls._new(percent)
 
     @classmethod
-    def from_fraction(cls, fraction: float) -> Self:
+    def from_fraction(cls, fraction: BaseValueT) -> Self:
         """Initialize a new percentage quantity from a fraction.
 
         Args:
@@ -49,7 +49,7 @@ class Percentage(
         """
         return cls._new(fraction * 100)
 
-    def as_percent(self) -> float:
+    def as_percent(self) -> BaseValueT:
         """Return this quantity as a percentage.
 
         Returns:
@@ -57,7 +57,7 @@ class Percentage(
         """
         return self._base_value
 
-    def as_fraction(self) -> float:
+    def as_fraction(self) -> BaseValueT:
         """Return this quantity as a fraction.
 
         Returns:
