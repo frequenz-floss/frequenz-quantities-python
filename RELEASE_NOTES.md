@@ -6,7 +6,7 @@
 
 ## Upgrading
 
-- `typing-extensions` minimal version was bumped to 4.6.0 to be compatible with Python3.12. You might need to upgrade it in your project too.
+- The `marshmallow` optional dependency now requires version 4 or later. Consumers pinned to marshmallow 3.x must upgrade.
 
 ## New Features
 
