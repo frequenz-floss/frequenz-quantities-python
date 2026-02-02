@@ -801,6 +801,9 @@ def test_quantity_divided_by_float(
 ) -> None:
     """Test the division of all quantities by a float."""
     hypothesis.assume(scalar != 0.0)
+    # pylint thinks the next code is unreachable, probably the assume above is marked as
+    # no-return or something.
+    # pylint: disable-next=unreachable
     quantity = quantity_ctor(quantity_value)
     expected_value = quantity.base_value / scalar
     print(f"{quantity=}, {expected_value=}")
@@ -836,7 +839,11 @@ def test_quantity_divided_by_self(
 ) -> None:
     """Test the division of all quantities by a float."""
     hypothesis.assume(divisor_value != 0.0)
+
     # We need to have float here because quantity /= divisor will return a float
+    # pylint thinks the next code is unreachable, probably the assume above is marked as
+    # no-return or something.
+    # pylint: disable-next=unreachable
     quantity: Quantity | float = quantity_ctor(quantity_value)
     divisor = quantity_ctor(divisor_value)
     assert isinstance(quantity, Quantity)
