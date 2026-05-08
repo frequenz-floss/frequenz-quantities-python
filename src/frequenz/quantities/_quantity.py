@@ -3,7 +3,6 @@
 
 """Types for holding quantities with units."""
 
-
 from __future__ import annotations
 
 import math

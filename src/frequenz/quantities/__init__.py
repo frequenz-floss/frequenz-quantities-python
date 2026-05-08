@@ -86,7 +86,6 @@ to install this package with the `marshmallow` optional dependencies (e.g.
 `pip install frequenz-quantities[marshmallow]`).
 """
 
-
 from ._apparent_power import ApparentPower
 from ._current import Current
 from ._energy import Energy
