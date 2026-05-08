@@ -3,7 +3,6 @@
 
 """Types for holding quantities with units."""
 
-
 from typing import Self
 
 from ._quantity import NoDefaultConstructible, Quantity

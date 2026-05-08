@@ -3,7 +3,6 @@
 
 """Types for holding quantities with units."""
 
-
 from datetime import timedelta
 from typing import Self
 

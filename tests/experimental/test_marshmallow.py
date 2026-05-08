@@ -3,7 +3,6 @@
 
 """Test marshmallow fields and schema."""
 
-
 from dataclasses import dataclass, field
 from typing import Any, Self, cast
 
