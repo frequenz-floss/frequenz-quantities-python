@@ -104,7 +104,6 @@ class Quantity:
 
         Raises:
             ValueError: If the string does not match the expected format.
-
         """
         split_string = string.split(" ")
 
@@ -130,11 +129,7 @@ class Quantity:
 
     @property
     def base_value(self) -> float:
-        """Return the value of this quantity in the base unit.
-
-        Returns:
-            The value of this quantity in the base unit.
-        """
+        """The value of this quantity in the base unit."""
         return self._base_value
 
     def __round__(self, ndigits: int | None = None) -> Self:
@@ -169,13 +164,7 @@ class Quantity:
 
     @property
     def base_unit(self) -> str | None:
-        """Return the base unit of this quantity.
-
-        None if this quantity has no unit.
-
-        Returns:
-            The base unit of this quantity.
-        """
+        """The base unit of this quantity, or `None` if this quantity has no unit."""
         if not self._exponent_unit_map:
             return None
         return self._exponent_unit_map[0]
@@ -396,7 +385,7 @@ class Quantity:
         """Divide this quantity by a scalar.
 
         Args:
-            other: The scalar or percentage to divide this quantity by.
+            other: The scalar to divide this quantity by.
 
         Returns:
             The divided quantity.
@@ -527,8 +516,8 @@ class NoDefaultConstructible(type):
         """Raise a TypeError when the default constructor is called.
 
         Args:
-            *_args: ignored positional arguments.
-            **_kwargs: ignored keyword arguments.
+            *_args: Ignored positional arguments.
+            **_kwargs: Ignored keyword arguments.
 
         Raises:
             TypeError: Always.
