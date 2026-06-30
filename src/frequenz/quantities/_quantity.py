@@ -104,7 +104,6 @@ class Quantity:
 
         Raises:
             ValueError: If the string does not match the expected format.
-
         """
         split_string = string.split(" ")
 
@@ -386,7 +385,7 @@ class Quantity:
         """Divide this quantity by a scalar.
 
         Args:
-            other: The scalar or percentage to divide this quantity by.
+            other: The scalar to divide this quantity by.
 
         Returns:
             The divided quantity.
@@ -517,8 +516,8 @@ class NoDefaultConstructible(type):
         """Raise a TypeError when the default constructor is called.
 
         Args:
-            *_args: ignored positional arguments.
-            **_kwargs: ignored keyword arguments.
+            *_args: Ignored positional arguments.
+            **_kwargs: Ignored keyword arguments.
 
         Raises:
             TypeError: Always.
