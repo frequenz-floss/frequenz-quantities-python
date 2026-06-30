@@ -130,11 +130,7 @@ class Quantity:
 
     @property
     def base_value(self) -> float:
-        """Return the value of this quantity in the base unit.
-
-        Returns:
-            The value of this quantity in the base unit.
-        """
+        """The value of this quantity in the base unit."""
         return self._base_value
 
     def __round__(self, ndigits: int | None = None) -> Self:
@@ -169,13 +165,7 @@ class Quantity:
 
     @property
     def base_unit(self) -> str | None:
-        """Return the base unit of this quantity.
-
-        None if this quantity has no unit.
-
-        Returns:
-            The base unit of this quantity.
-        """
+        """The base unit of this quantity, or `None` if this quantity has no unit."""
         if not self._exponent_unit_map:
             return None
         return self._exponent_unit_map[0]
