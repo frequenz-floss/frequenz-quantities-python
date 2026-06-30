@@ -96,10 +96,10 @@ class Energy(
         return self._base_value / 1e6
 
     def __mul__(self, other: float | Percentage) -> Self:
-        """Scale this energy by a percentage.
+        """Scale this energy by a scalar or percentage.
 
         Args:
-            other: The percentage by which to scale this energy.
+            other: The scalar or percentage by which to scale this energy.
 
         Returns:
             The scaled energy.
@@ -162,13 +162,13 @@ class Energy(
     def __truediv__(
         self, other: float | Self | timedelta | Power, /
     ) -> Self | float | Power | timedelta:
-        """Return a power or duration from dividing this energy by the given value.
+        """Return a scaled energy, ratio, power, or duration.
 
         Args:
             other: The scalar, energy, power or duration to divide by.
 
         Returns:
-            A power or duration from dividing this energy by the given value.
+            A scaled energy, a ratio, a power, or a duration.
         """
         from ._power import Power  # pylint: disable=import-outside-toplevel
 

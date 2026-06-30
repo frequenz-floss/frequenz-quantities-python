@@ -118,34 +118,34 @@ class ApparentPower(
 
     @overload
     def __mul__(self, scalar: float, /) -> Self:
-        """Scale this power by a scalar.
+        """Scale this apparent power by a scalar.
 
         Args:
-            scalar: The scalar by which to scale this power.
+            scalar: The scalar by which to scale this apparent power.
 
         Returns:
-            The scaled power.
+            The scaled apparent power.
         """
 
     @overload
     def __mul__(self, percent: Percentage, /) -> Self:
-        """Scale this power by a percentage.
+        """Scale this apparent power by a percentage.
 
         Args:
-            percent: The percentage by which to scale this power.
+            percent: The percentage by which to scale this apparent power.
 
         Returns:
-            The scaled power.
+            The scaled apparent power.
         """
 
     def __mul__(self, other: float | Percentage, /) -> Self:
-        """Return a power or energy from multiplying this power by the given value.
+        """Scale this apparent power by a scalar or percentage.
 
         Args:
-            other: The scalar, percentage or duration to multiply by.
+            other: The scalar or percentage by which to scale this apparent power.
 
         Returns:
-            A power or energy.
+            The scaled apparent power.
         """
         from ._percentage import Percentage  # pylint: disable=import-outside-toplevel
 
@@ -165,58 +165,58 @@ class ApparentPower(
     # https://github.com/python/mypy/issues/4985#issuecomment-389692396
     @overload  # type: ignore[override]
     def __truediv__(self, other: float, /) -> Self:
-        """Divide this power by a scalar.
+        """Divide this apparent power by a scalar.
 
         Args:
-            other: The scalar to divide this power by.
+            other: The scalar to divide this apparent power by.
 
         Returns:
-            The divided power.
+            The divided apparent power.
         """
 
     @overload
     def __truediv__(self, other: Self, /) -> float:
-        """Return the ratio of this power to another.
+        """Return the ratio of this apparent power to another.
 
         Args:
-            other: The other power.
+            other: The other apparent power.
 
         Returns:
-            The ratio of this power to another.
+            The ratio of this apparent power to another.
         """
 
     @overload
     def __truediv__(self, current: Current, /) -> Voltage:
-        """Return a voltage from dividing this power by the given current.
+        """Return a voltage from dividing this apparent power by the given current.
 
         Args:
             current: The current to divide by.
 
         Returns:
-            A voltage from dividing this power by a current.
+            A voltage from dividing this apparent power by a current.
         """
 
     @overload
     def __truediv__(self, voltage: Voltage, /) -> Current:
-        """Return a current from dividing this power by the given voltage.
+        """Return a current from dividing this apparent power by the given voltage.
 
         Args:
             voltage: The voltage to divide by.
 
         Returns:
-            A current from dividing this power by a voltage.
+            A current from dividing this apparent power by a voltage.
         """
 
     def __truediv__(
         self, other: float | Self | Current | Voltage, /
     ) -> Self | float | Voltage | Current:
-        """Return a current or voltage from dividing this power by the given value.
+        """Return a scaled apparent power, ratio, voltage, or current.
 
         Args:
-            other: The scalar, power, current or voltage to divide by.
+            other: The scalar, apparent power, current or voltage to divide by.
 
         Returns:
-            A current or voltage from dividing this power by the given value.
+            A scaled apparent power, a ratio, a voltage, or a current.
         """
         from ._current import Current  # pylint: disable=import-outside-toplevel
         from ._voltage import Voltage  # pylint: disable=import-outside-toplevel
