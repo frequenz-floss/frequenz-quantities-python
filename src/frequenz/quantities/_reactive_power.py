@@ -193,7 +193,7 @@ class ReactivePower(
             current: The current to divide by.
 
         Returns:
-            A voltage from dividing this power by the a current.
+            A voltage from dividing this power by a current.
         """
 
     @overload

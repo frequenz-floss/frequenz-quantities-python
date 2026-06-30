@@ -25,7 +25,7 @@ class ApparentPower(
         6: "MVA",
     },
 ):
-    """A apparent power quantity.
+    """An apparent power quantity.
 
     Objects of this type are wrappers around `float` values and are immutable.
 
@@ -193,7 +193,7 @@ class ApparentPower(
             current: The current to divide by.
 
         Returns:
-            A voltage from dividing this power by the a current.
+            A voltage from dividing this power by a current.
         """
 
     @overload

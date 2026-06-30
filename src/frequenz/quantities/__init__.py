@@ -3,7 +3,7 @@
 
 """Types for holding quantities with units.
 
-This library provide types for holding quantities with units. The main goal is to avoid
+This library provides types for holding quantities with units. The main goal is to avoid
 mistakes while working with different types of quantities, for example avoiding adding
 a length to a time.
 
