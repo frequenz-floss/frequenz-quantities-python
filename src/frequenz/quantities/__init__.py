@@ -24,17 +24,17 @@ the quantity.
 
 This library provides the following types:
 
-- [`ApparentPower`][]: A quantity representing apparent power.
-- [`Current`][]: A quantity representing an electric current.
-- [`Energy`][]: A quantity representing energy.
-- [`Frequency`][]: A quantity representing frequency.
-- [`Percentage`][]: A quantity representing a percentage.
-- [`Power`][]: A quantity representing power.
-- [`ReactivePower`][]: A quantity representing reactive power.
-- [`Temperature`][]: A quantity representing temperature.
-- [`Voltage`][]: A quantity representing electric voltage.
+- [`ApparentPower`][.ApparentPower]: A quantity representing apparent power.
+- [`Current`][.Current]: A quantity representing an electric current.
+- [`Energy`][.Energy]: A quantity representing energy.
+- [`Frequency`][.Frequency]: A quantity representing frequency.
+- [`Percentage`][.Percentage]: A quantity representing a percentage.
+- [`Power`][.Power]: A quantity representing power.
+- [`ReactivePower`][.ReactivePower]: A quantity representing reactive power.
+- [`Temperature`][.Temperature]: A quantity representing temperature.
+- [`Voltage`][.Voltage]: A quantity representing electric voltage.
 
-There is also the unitless [`Quantity`][] class. All
+There is also the unitless [`Quantity`][.Quantity] class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the `Quantity` class directly is discouraged, as it doesn't provide
 any unit conversion methods.

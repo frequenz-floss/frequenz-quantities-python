@@ -4,7 +4,7 @@
 """Custom marshmallow fields and schema.
 
 This module provides custom marshmallow fields for quantities and
-a [`QuantitySchema`][] class to
+a [`QuantitySchema`][.QuantitySchema] class to
 be used as base schema for dataclasses containing quantities.
 
 Danger:
@@ -43,34 +43,36 @@ attribute.
 
 
 class _QuantityField(Field[Quantity]):
-    """A custom field for [`Quantity`][] objects supporting per-field serialization.
+    """A custom field for [`Quantity`][frequenz.quantities.Quantity] objects supporting per-field serialization.
 
-    This class handles serialization and deserialization of ALL [`Quantity`][]
-    subclasses.
-    The specific [`Quantity`][] subclass is determined by the [`.field_type`][.field_type]
-    attribute.
+    This class handles serialization and deserialization of ALL
+    [`Quantity`][frequenz.quantities.Quantity] subclasses.
+    The specific [`Quantity`][frequenz.quantities.Quantity] subclass is determined by the
+    [`.field_type`][.field_type] attribute.
 
     * Deserialization auto-detects the type of deserialization (float or string)
       based on the input type.
     * Serialization uses either the schema's default or the per-field
       configuration found in the metadata.
 
-    We need distinct `_QuantityField` subclasses for each [`Quantity`][] subclass, so
+    We need distinct `_QuantityField` subclasses for each
+    [`Quantity`][frequenz.quantities.Quantity] subclass, so
     they can be used in the [`TYPE_MAPPING`][..QuantitySchema.TYPE_MAPPING] in
-    [`QuantitySchema`][].
+    [`QuantitySchema`][..QuantitySchema].
     This class is not intended to be used directly.
 
-    Instead, we use the specific `_QuantityField` subclasses for each [`Quantity`][].
+    Instead, we use the specific `_QuantityField` subclasses for each
+    [`Quantity`][frequenz.quantities.Quantity].
     Each field subclass simply sets the [`.field_type`][.field_type]
-    attribute to the corresponding [`Quantity`][] subclass.
+    attribute to the corresponding [`Quantity`][frequenz.quantities.Quantity] subclass.
 
-    Those subclasses are stored in [`QUANTITY_FIELD_CLASSES`][]
+    Those subclasses are stored in [`QUANTITY_FIELD_CLASSES`][..QUANTITY_FIELD_CLASSES]
     and are used for the [`TYPE_MAPPING`][..QuantitySchema.TYPE_MAPPING] in
-    [`QuantitySchema`][].
+    [`QuantitySchema`][..QuantitySchema].
     """
 
     field_type: Type[Quantity] | None = None
-    """The specific [`Quantity`][] subclass."""
+    """The specific [`Quantity`][frequenz.quantities.Quantity] subclass."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the field."""
@@ -80,7 +82,7 @@ class _QuantityField(Field[Quantity]):
     def _serialize(
         self, value: Quantity | None, attr: str | None, obj: Any, **kwargs: Any
     ) -> Any:
-        """Serialize a [`Quantity`][] value based on per-field configuration.
+        """Serialize a [`Quantity`][frequenz.quantities.Quantity] value based on per-field configuration.
 
         Args:
             value: The quantity to serialize, or `None`.
@@ -122,7 +124,7 @@ class _QuantityField(Field[Quantity]):
     def _deserialize(
         self, value: Any, attr: str | None, data: Any, **kwargs: Any
     ) -> Quantity:
-        """Deserialize a float, int, or string into a [`Quantity`][] instance.
+        """Deserialize a float, int, or string into a [`Quantity`][frequenz.quantities.Quantity] instance.
 
         Args:
             value: The raw value to deserialize (float, int, or string).
@@ -174,55 +176,55 @@ _QUANTITY_SUBCLASSES = [
 
 
 class ApparentPowerField(_QuantityField):
-    """A custom field for [`ApparentPower`][] objects."""
+    """A custom field for [`ApparentPower`][frequenz.quantities.ApparentPower] objects."""
 
     field_type = ApparentPower
 
 
 class CurrentField(_QuantityField):
-    """A custom field for [`Current`][] objects."""
+    """A custom field for [`Current`][frequenz.quantities.Current] objects."""
 
     field_type = Current
 
 
 class EnergyField(_QuantityField):
-    """A custom field for [`Energy`][] objects."""
+    """A custom field for [`Energy`][frequenz.quantities.Energy] objects."""
 
     field_type = Energy
 
 
 class FrequencyField(_QuantityField):
-    """A custom field for [`Frequency`][] objects."""
+    """A custom field for [`Frequency`][frequenz.quantities.Frequency] objects."""
 
     field_type = Frequency
 
 
 class PercentageField(_QuantityField):
-    """A custom field for [`Percentage`][] objects."""
+    """A custom field for [`Percentage`][frequenz.quantities.Percentage] objects."""
 
     field_type = Percentage
 
 
 class PowerField(_QuantityField):
-    """A custom field for [`Power`][] objects."""
+    """A custom field for [`Power`][frequenz.quantities.Power] objects."""
 
     field_type = Power
 
 
 class ReactivePowerField(_QuantityField):
-    """A custom field for [`ReactivePower`][] objects."""
+    """A custom field for [`ReactivePower`][frequenz.quantities.ReactivePower] objects."""
 
     field_type = ReactivePower
 
 
 class TemperatureField(_QuantityField):
-    """A custom field for [`Temperature`][] objects."""
+    """A custom field for [`Temperature`][frequenz.quantities.Temperature] objects."""
 
     field_type = Temperature
 
 
 class VoltageField(_QuantityField):
-    """A custom field for [`Voltage`][] objects."""
+    """A custom field for [`Voltage`][frequenz.quantities.Voltage] objects."""
 
     field_type = Voltage
 
@@ -238,10 +240,10 @@ QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[Field[Any]]] = {
     Temperature: TemperatureField,
     Voltage: VoltageField,
 }
-"""The mapping from [`Quantity`][] subclasses to their corresponding field subclasses.
+"""The mapping from [`Quantity`][frequenz.quantities.Quantity] subclasses to their corresponding field subclasses.
 
-This mapping is used in [`QuantitySchema.TYPE_MAPPING`][.QuantitySchema.TYPE_MAPPING] to
-determine the correct field class for each [`Quantity`][] subclass.
+This mapping is used in [`QuantitySchema.TYPE_MAPPING`][..QuantitySchema.TYPE_MAPPING] to
+determine the correct field class for each [`Quantity`][frequenz.quantities.Quantity] subclass.
 """
 
 
@@ -315,4 +317,4 @@ class QuantitySchema(Schema):
     """
 
     TYPE_MAPPING: dict[type, type[Field[Any]]] = QUANTITY_FIELD_CLASSES
-    """The field class to use for each [`Quantity`][] subclass."""
+    """The field class to use for each [`Quantity`][frequenz.quantities.Quantity] subclass."""
