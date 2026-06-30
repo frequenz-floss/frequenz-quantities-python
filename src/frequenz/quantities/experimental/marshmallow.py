@@ -43,7 +43,9 @@ attribute.
 
 
 class _QuantityField(Field[Quantity]):
-    """A custom field for [`Quantity`][frequenz.quantities.Quantity] objects supporting per-field serialization.
+    """A custom field for [`Quantity`][frequenz.quantities.Quantity] objects.
+
+    Supports per-field serialization configuration.
 
     This class handles serialization and deserialization of ALL
     [`Quantity`][frequenz.quantities.Quantity] subclasses.
@@ -82,7 +84,7 @@ class _QuantityField(Field[Quantity]):
     def _serialize(
         self, value: Quantity | None, attr: str | None, obj: Any, **kwargs: Any
     ) -> Any:
-        """Serialize a [`Quantity`][frequenz.quantities.Quantity] value based on per-field configuration.
+        """Serialize a [`Quantity`][frequenz.quantities.Quantity] based on per-field configuration.
 
         Args:
             value: The quantity to serialize, or `None`.
@@ -93,6 +95,12 @@ class _QuantityField(Field[Quantity]):
         Returns:
             The string representation with unit if serializing as string, or
             the raw base float value otherwise. `None` if `value` is `None`.
+
+        Raises:
+            TypeError: If [`.field_type`][.field_type] is not set to a
+                [`Quantity`][frequenz.quantities.Quantity] subclass, or if
+                `value` is not a [`Quantity`][frequenz.quantities.Quantity]
+                instance.
         """
         if self.field_type is None or not issubclass(self.field_type, Quantity):
             raise TypeError(
@@ -124,7 +132,7 @@ class _QuantityField(Field[Quantity]):
     def _deserialize(
         self, value: Any, attr: str | None, data: Any, **kwargs: Any
     ) -> Quantity:
-        """Deserialize a float, int, or string into a [`Quantity`][frequenz.quantities.Quantity] instance.
+        """Deserialize a [`Quantity`][frequenz.quantities.Quantity] from a float, int, or string.
 
         Args:
             value: The raw value to deserialize (float, int, or string).
@@ -136,8 +144,10 @@ class _QuantityField(Field[Quantity]):
             The deserialized quantity instance.
 
         Raises:
-            [`ValidationError`][marshmallow.ValidationError]: If the input type is
-                invalid or parsing fails.
+            TypeError: If [`.field_type`][.field_type] is not set to a
+                [`Quantity`][frequenz.quantities.Quantity] subclass.
+            ValidationError: If the input type is invalid or parsing fails
+                (see [`marshmallow.ValidationError`][marshmallow.ValidationError]).
         """
         if self.field_type is None or not issubclass(self.field_type, Quantity):
             raise TypeError(
@@ -240,10 +250,12 @@ QUANTITY_FIELD_CLASSES: dict[type[Quantity], type[Field[Any]]] = {
     Temperature: TemperatureField,
     Voltage: VoltageField,
 }
-"""The mapping from [`Quantity`][frequenz.quantities.Quantity] subclasses to their corresponding field subclasses.
+"""The mapping from [`Quantity`][frequenz.quantities.Quantity] subclasses to
+their corresponding field subclasses.
 
 This mapping is used in [`QuantitySchema.TYPE_MAPPING`][..QuantitySchema.TYPE_MAPPING] to
-determine the correct field class for each [`Quantity`][frequenz.quantities.Quantity] subclass.
+determine the correct field class for each [`Quantity`][frequenz.quantities.Quantity]
+subclass.
 """
 
 
@@ -251,7 +263,6 @@ class QuantitySchema(Schema):
     """A schema for quantities.
 
     Example:
-
     ```python
     from dataclasses import dataclass, field
     from marshmallow_dataclass import class_schema
