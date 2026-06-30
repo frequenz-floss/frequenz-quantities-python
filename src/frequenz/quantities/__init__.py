@@ -13,7 +13,7 @@ units, like adding a power in Joules to a power in Watts without converting one 
 Quantities store the value in a base unit, and then provide methods to get that quantity
 as a particular unit. They can only be constructed using special constructors with the
 form `Quantity.from_<unit>`, for example
-[`Power.from_watts(10.0)`][frequenz.quantities.Power.from_watts].
+[`Power.from_watts(10.0)`][.Power.from_watts].
 
 Internally quantities store values as `float`s, so regular [float issues and limitations
 apply](https://docs.python.org/3/tutorial/floatingpoint.html), although some of them are
@@ -24,19 +24,17 @@ the quantity.
 
 This library provides the following types:
 
-- [ApparentPower][frequenz.quantities.ApparentPower]: A quantity representing apparent
-  power.
-- [Current][frequenz.quantities.Current]: A quantity representing an electric current.
-- [Energy][frequenz.quantities.Energy]: A quantity representing energy.
-- [Frequency][frequenz.quantities.Frequency]: A quantity representing frequency.
-- [Percentage][frequenz.quantities.Percentage]: A quantity representing a percentage.
-- [Power][frequenz.quantities.Power]: A quantity representing power.
-- [ReactivePower][frequenz.quantities.ReactivePower]: A quantity representing reactive
-  power.
-- [Temperature][frequenz.quantities.Temperature]: A quantity representing temperature.
-- [Voltage][frequenz.quantities.Voltage]: A quantity representing electric voltage.
+- [`ApparentPower`][]: A quantity representing apparent power.
+- [`Current`][]: A quantity representing an electric current.
+- [`Energy`][]: A quantity representing energy.
+- [`Frequency`][]: A quantity representing frequency.
+- [`Percentage`][]: A quantity representing a percentage.
+- [`Power`][]: A quantity representing power.
+- [`ReactivePower`][]: A quantity representing reactive power.
+- [`Temperature`][]: A quantity representing temperature.
+- [`Voltage`][]: A quantity representing electric voltage.
 
-There is also the unitless [Quantity][frequenz.quantities.Quantity] class. All
+There is also the unitless [`Quantity`][] class. All
 quantities are subclasses of this class and it can be used as a base to create new
 quantities. Using the `Quantity` class directly is discouraged, as it doesn't provide
 any unit conversion methods.
@@ -80,7 +78,7 @@ Example:
     ```
 
 This library also provides an [**experimental** module with marshmallow fields and
-a base schema][frequenz.quantities.experimental.marshmallow] to serialize and
+a base schema][.experimental.marshmallow] to serialize and
 deserialize quantities using the marshmallow library. To use it, you need to make sure
 to install this package with the `marshmallow` optional dependencies (e.g.
 `pip install frequenz-quantities[marshmallow]`).
