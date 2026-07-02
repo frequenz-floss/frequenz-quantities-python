@@ -17,6 +17,53 @@ converting one of them.
 Quantities store the value in a base unit, and then provide methods to get that
 quantity as a particular unit.
 
+## Installation
+
+### Using `pip`
+
+```bash
+python3 -m pip install frequenz-quantities
+```
+
+### Using `pyproject.toml`
+
+Add this to your `pyproject.toml` file:
+
+```toml
+[project]
+dependencies = [
+    "frequenz-quantities >= 1.0.0, < 2"
+]
+```
+
+> [!NOTE]
+> We recommend pinning the dependency to the latest version for programs,
+> like `"frequenz-quantities == 1.0.0"`, and specifying a version range
+> spanning one major version for libraries, like `"frequenz-quantities >= 1.0.0, < 2"`.
+> We follow [semver](https://semver.org/).
+
+## Quick Start
+
+```python
+from frequenz.quantities import Power, Current, Voltage
+
+# Create quantities using unit-specific constructors
+power = Power.from_watts(1500.0)
+current = Current.from_amperes(10.0)
+voltage = Voltage.from_volts(230.0)
+
+# Perform operations between quantities
+total_power = power + Power.from_kilowatts(2.0)
+print(f"Total power: {total_power}")  # Total power: 3500 W
+
+# Convert to different units
+print(f"Power in kW: {total_power.as_kilowatts()}")  # Power in kW: 3.5
+
+# Type safety prevents invalid operations
+# This would raise a TypeError:
+# invalid = power + current  # Can't add power and current!
+```
+
 ## Documentation
 
 For more information on how to use this library and examples, please check the
