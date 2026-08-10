@@ -10,7 +10,7 @@
 
 ## New Features
 
-<!-- Here goes the main new features and examples or instructions on how to use them -->
+- Add `frequenz.quantities.experimental.toml_generator` module with `generate_toml_from_schema()` and `CommentStyle` for generating documented TOML configuration files from marshmallow schemas.
 
 ## Bug Fixes
 
