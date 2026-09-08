@@ -15,5 +15,3 @@
 ## Bug Fixes
 
 <!-- Here goes notable bug fixes that are worth a special mention or explanation -->
-
-- Fix a cross-reference that broke downstream strict doc builds.
