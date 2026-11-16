@@ -95,7 +95,7 @@ class Energy(
         """
         return self._base_value / 1e6
 
-    def __mul__(self, other: float | Percentage) -> Self:
+    def __mul__(self, other: float | Percentage, /) -> Self:
         """Scale this energy by a scalar or percentage.
 
         Args:
